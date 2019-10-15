@@ -1,8 +1,7 @@
-var methods = {
+var start_listener = function(){
 
-handshake_listener: function(){
 var net = require('net');
-var counter = 0;
+var counter = 0
 // Configuration parameters
 var HOST = '0.0.0.0';
 var PORT = 41555;
@@ -42,5 +41,5 @@ function onClientConnected(sock) {
   });
 };
 }
-}
-exports.data = methods;
+
+module.exports = {start_listener};
