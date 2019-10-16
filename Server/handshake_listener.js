@@ -22,16 +22,33 @@ function onClientConnected(sock) {
   console.log('Connected clients: %i', counter);
  
   sock.on('data', function(data) {
-    if(data == 'IH'){
-      console.log('Received IH from: %s', remoteAddress);
-      db_con.add_player(remoteAddress)
-      sock.write('IH-RX')
-    }
-    else if(data == 'KAP'){
-      console.log('Received KAP from: %s', remoteAddress);
-      sock.write('KAP-RX')
-    }
+	decoded_json = JSON.parse(data);
+
+	switch (decoded_json.TYPE){
+
+  	case "HANDSHAKE":
+      	console.log('Received IH from: %s', remoteAddress);
+      	db_con.add_player(remoteAddress);
+      	sock.write('IH-RX');
+    	break;
+
+  	case "KEEPALIVE":
+		console.log('Received KAP from: %s', remoteAddress);
+    	sock.write('KAP-RX');
+	break;
+
+	case "TEAM_CREATE":
+sock.write('OK');
+		db_con.create_team(remoteAddress,decoded_json.NAME);
+	break;
+
+	default:
+		break;
+}
+
   });
+
+
   sock.on('close',  function () {
     console.log('connection from %s closed', remoteAddress);
 	db_con.remove_player(remoteAddress)
