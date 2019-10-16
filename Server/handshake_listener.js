@@ -1,3 +1,4 @@
+var db_con = require('./database_connection.js');
 var start_listener = function(){
 
 var net = require('net');
@@ -23,7 +24,7 @@ function onClientConnected(sock) {
   sock.on('data', function(data) {
     if(data == 'IH'){
       console.log('Received IH from: %s', remoteAddress);
-      
+      db_con.add_player(remoteAddress)
       sock.write('IH-RX')
     }
     else if(data == 'KAP'){
@@ -33,6 +34,7 @@ function onClientConnected(sock) {
   });
   sock.on('close',  function () {
     console.log('connection from %s closed', remoteAddress);
+	db_con.remove_player(remoteAddress)
     counter = counter - 1;
     console.log('Connected clients: %i', counter)
   });
