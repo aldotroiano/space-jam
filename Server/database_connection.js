@@ -27,7 +27,7 @@ var create_connection = function(){
 	});
 });
 console.log("Added player to Table ONLINE_PLAYERS")
-console.log(get_player_ID(remoteAddress));
+
 }
 
 	function remove_player(remoteAddress){
@@ -45,22 +45,26 @@ console.log("Deleted player from Table ONLINE_PLAYERS")
 }
 
 	function get_player_ID(remoteAddress){
-
-	var query_get_id = "SELECT ID as id FROM ONLINE_PLAYERS WHERE \"IP ADDRESS\" = '"+ remoteAddress +"';";
-
-	db.serialize(() => {
-		db.each(query_get_id, (err,resp) => {
-		if(err) { console.error(err.message) }
-
-	return resp.id;
+	
+		return new Promise((resolve, reject) => {
+		db.get("SELECT ID as id FROM ONLINE_PLAYERS WHERE \"IP ADDRESS\" = ?", [remoteAddress], (err,resp) => {
+		if(err) { reject(err); }
+		resolve(JSON.parse(resp.id))
 });
 });
-
 }
 	function create_team(remoteAddress,team_name){
 
-	//console.log(get_player_ID(remoteAddress));
-console.log(team_name)
+
+	get_player_ID(remoteAddress).then(function(res) { 
+
+	console.log(res);
+
+	},
+	function(err){ 
+	console.log(err); 
+	});
+
 	
 }
 

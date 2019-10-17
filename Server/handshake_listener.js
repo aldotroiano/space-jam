@@ -1,4 +1,4 @@
-var db_con = require('./database_connection.js');
+var db = require('./database_connection.js');
 var start_listener = function(){
 
 var net = require('net');
@@ -22,36 +22,43 @@ function onClientConnected(sock) {
   console.log('Connected clients: %i', counter);
  
   sock.on('data', function(data) {
+
+try{
 	decoded_json = JSON.parse(data);
 
 	switch (decoded_json.TYPE){
 
   	case "HANDSHAKE":
       	console.log('Received IH from: %s', remoteAddress);
-      	db_con.add_player(remoteAddress);
-      	sock.write('IH-RX');
+      	db.add_player(remoteAddress);
+      	sock.write(JSON.stringify({TYPE : "HANDSHAKE", RES : "OK"}));
     	break;
 
   	case "KEEPALIVE":
 		console.log('Received KAP from: %s', remoteAddress);
-    	sock.write('KAP-RX');
-	break;
+    	sock.write(JSON.stringify({TYPE : "KEEPALIVE", RES : "OK"}));
+		break;
 
 	case "TEAM_CREATE":
-sock.write('OK');
-		db_con.create_team(remoteAddress,decoded_json.NAME);
+		
+		console.log("SENDING PACKET")
+		sock.write(JSON.stringify({TYPE : "TEAM_CREATE", RES : "OK"}));
+db.create_team(remoteAddress,decoded_json.NAME);
 	break;
 
 	default:
 		break;
 }
-
+}
+catch (error){
+console.log(error);
+}
   });
 
 
   sock.on('close',  function () {
     console.log('connection from %s closed', remoteAddress);
-	db_con.remove_player(remoteAddress)
+	db.remove_player(remoteAddress)
     counter = counter - 1;
     console.log('Connected clients: %i', counter)
   });
