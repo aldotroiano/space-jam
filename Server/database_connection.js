@@ -45,9 +45,10 @@ console.log("Deleted player from Table ONLINE_PLAYERS")
 }
 
 	function get_player_ID(remoteAddress){
-	
+	var SQLquery = "SELECT ID as id FROM ONLINE_PLAYERS WHERE \"IP ADDRESS\" = \"" +  remoteAddress + "\" ";
+
 		return new Promise((resolve, reject) => {
-		db.get("SELECT ID as id FROM ONLINE_PLAYERS WHERE \"IP ADDRESS\" = ?", [remoteAddress], (err,resp) => {
+		db.get(SQLquery, (err,resp) => {
 		if(err) { reject(err); }
 		resolve(JSON.parse(resp.id))
 });
@@ -57,9 +58,20 @@ console.log("Deleted player from Table ONLINE_PLAYERS")
 
 
 	get_player_ID(remoteAddress).then(function(res) { 
+/*
+BEGIN TRANSACTION;
+INSERT INTO TEAMS (Team_name) VALUES ("ciaociao");
+INSERT INTO TEAM_PLAYER ("TEAM ID_FK",PLAYER_ID_FK,is_Host) VALUES 
+(last_insert_rowid(),60,(CASE WHEN (SELECT COUNT(*) is_Host FROM TEAM_PLAYER WHERE "TEAM ID_FK" = last_insert_rowid() AND is_Host = 1) > 0 THEN
+	 1
+	ELSE 0
+	END)
+	);
 
+COMMIT;*/
 	console.log(res);
-
+return;
+	
 	},
 	function(err){ 
 	console.log(err); 
