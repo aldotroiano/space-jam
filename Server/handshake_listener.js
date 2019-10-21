@@ -40,10 +40,9 @@ try{
 		break;
 
 	case "TEAM_CREATE":
-		
 		console.log("SENDING PACKET")
 		sock.write(JSON.stringify({TYPE : "TEAM_CREATE", RES : "OK"}));
-db.create_team(remoteAddress,decoded_json.NAME);
+		db.team_creation_adding(remoteAddress,decoded_json.NAME);
 	break;
 
 	default:
