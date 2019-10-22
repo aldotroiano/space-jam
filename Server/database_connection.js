@@ -42,10 +42,20 @@ console.log("Added player to Table ONLINE_PLAYERS")
 	}
 
 	function add_to_team(player_id,team_name){
-	console.log("ADDING PLAYER TO TEAM")
-	console.log(player_id)
-	console.log(team_name)
 
+	return new Promise((resolve, reject) => {
+	
+		db.beginTransaction(function(err,transaction){
+
+		transaction.run("INSERT INTO TEAM_PLAYER (\"TEAM ID_FK\",PLAYER_ID_FK,is_Host) VALUES ((SELECT Team_ID FROM TEAMS 			WHERE Team_name = \""+ team_name +"\"),"+ 			player_id +",(CASE WHEN (SELECT COUNT(*) is_Host FROM TEAM_PLAYER 			WHERE \"TEAM ID_FK\" = (SELECT Team_ID FROM TEAMS 			WHERE Team_name = \""+ team_name +"\") AND 			is_Host = 1) = 0 THEN 1 ELSE 0 END));")
+
+		transaction.commit(function (err){
+			if(err) { reject(err); }
+			console.log("done");
+			resolve("done");
+		});
+	});
+});
 	}
 
 function create_team(player_id,team_name){
@@ -96,9 +106,11 @@ function create_team(player_id,team_name){
 		console.log("Player_in_team" + team_exists)		
 	if(team_exists == 1){
 	console.log("TEAM EXISTS")
-		//add_to_team(player_id,team_name).then(function(successful))	{
-		add_to_team(player_id,team_name);
-		return;
+	add_to_team(player_id,team_name).then(function(done){
+console.log("ADDED TO TEAM");
+return;
+});
+		
 	}
 	else if(team_exists == 0){
 	create_team(player_id,team_name).then(function(done){
