@@ -11,13 +11,11 @@ var create_connection = function(){
 			process.exit(1);
 		}
 		console.log('Connected to Database');
-
-
 }));
 
 }
 
-	function add_player(remoteAddress){
+	function add_player(remoteAddress,player_name){
 	var query_insert = "INSERT INTO ONLINE_PLAYERS('IP ADDRESS') VALUES ('"+ remoteAddress +"');";
 
 	db.exec(query_insert, function(err) {
@@ -41,12 +39,12 @@ console.log("Added player to Table ONLINE_PLAYERS")
 	console.log("Deleted player from Table ONLINE_PLAYERS")
 	}
 
-	function add_to_team(player_id,team_name){
+	function add_to_team(player_id,team_name,username){
 
 	return new Promise((resolve, reject) => {
 	
 		db.beginTransaction(function(err,transaction){
-
+		transaction.run("UPDATE ONLINE_PLAYERS SET Name = \""+ username +"\" WHERE ID = "+ player_id +";")
 		transaction.run("INSERT INTO TEAM_PLAYER (\"TEAM ID_FK\",PLAYER_ID_FK,is_Host) VALUES ((SELECT Team_ID FROM TEAMS 			WHERE Team_name = \""+ team_name +"\"),"+ 			player_id +",(CASE WHEN (SELECT COUNT(*) is_Host FROM TEAM_PLAYER 			WHERE \"TEAM ID_FK\" = (SELECT Team_ID FROM TEAMS 			WHERE Team_name = \""+ team_name +"\") AND 			is_Host = 1) = 0 THEN 1 ELSE 0 END));")
 
 		transaction.commit(function (err){
@@ -58,12 +56,12 @@ console.log("Added player to Table ONLINE_PLAYERS")
 });
 	}
 
-function create_team(player_id,team_name){
+function create_team(player_id,team_name,username){
 
 	return new Promise((resolve, reject) => {
 	
 		db.beginTransaction(function(err,transaction){
-
+		transaction.run("UPDATE ONLINE_PLAYERS SET Name = \""+ username +"\" WHERE ID = "+ player_id +";")
 		transaction.run("INSERT INTO TEAMS (Team_name) VALUES (\""+ team_name +"\");");
 		transaction.run("INSERT INTO TEAM_PLAYER (\"TEAM ID_FK\",PLAYER_ID_FK,is_Host) VALUES (last_insert_rowid(),"+ 			player_id +",(CASE WHEN (SELECT COUNT(*) is_Host FROM TEAM_PLAYER WHERE \"TEAM ID_FK\" = last_insert_rowid() AND 			is_Host = 1) = 0 THEN 1 ELSE 0 END));")
 
@@ -86,6 +84,17 @@ function create_team(player_id,team_name){
 });
 }
 
+function is_host(player_id){
+	var SQLquery = "SELECT is_Host AS ishost FROM TEAM_PLAYER WHERE PLAYER_ID_FK = \"" + player_id + "\"";
+	return new Promise((resolve, reject) => {
+	db.get(SQLquery, (err,resp) => {
+		if(err) { reject(err); }
+		resolve(JSON.parse(resp.ishost))
+});
+});
+
+}
+
 	function Player_in_team(team_name){
 	var SQLquery = "SELECT COUNT(*) AS Count FROM TEAMS WHERE TEAM_NAME = \"" +  team_name + "\"";
 
@@ -97,33 +106,38 @@ function create_team(player_id,team_name){
 });
 });
 }
-	function team_creation_adding(remoteAddress,team_name){
+	function team_creation_adding(remoteAddress,team_name,username){
 
-
+	return new Promise((resolve, reject) => {
 	get_player_ID(remoteAddress).then(function(player_id) { 
 	console.log("in_get_playerID")
 	Player_in_team(team_name).then(function(team_exists){
-		console.log("Player_in_team" + team_exists)		
+	console.log("Player_in_team" + team_exists)		
 	if(team_exists == 1){
-	console.log("TEAM EXISTS")
-	add_to_team(player_id,team_name).then(function(done){
-console.log("ADDED TO TEAM");
-return;
+		console.log("TEAM EXISTS")
+		add_to_team(player_id,team_name,username).then(function(){
+		console.log("ADDED TO TEAM");
+		is_host(player_id).then(function(ishost){
+		resolve(ishost);
 });
-		
+		});	
 	}
 	else if(team_exists == 0){
-	create_team(player_id,team_name).then(function(done){
-	console.log("TEAM CREATED");
-	return;
-});
+		create_team(player_id,team_name,username).then(function(){
+		console.log("TEAM CREATED");
+		is_host(player_id).then(function(ishost){
+		resolve(ishost);
+		});
+		});
 	}
 	},
 	function(err){ 
 	console.log(err); 
+	reject();
 	});
 
 	
+});
 });
 };
 

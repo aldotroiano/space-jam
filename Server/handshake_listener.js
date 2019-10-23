@@ -30,7 +30,7 @@ try{
 
   	case "HANDSHAKE":
       	console.log('Received IH from: %s', remoteAddress);
-      	db.add_player(remoteAddress);
+      	db.add_player(remoteAddress,);
       	sock.write(JSON.stringify({TYPE : "HANDSHAKE", RES : "OK"}));
     	break;
 
@@ -40,9 +40,11 @@ try{
 		break;
 
 	case "TEAM_CREATE":
-		console.log("SENDING PACKET")
-		sock.write(JSON.stringify({TYPE : "TEAM_CREATE", RES : "OK"}));
-		db.team_creation_adding(remoteAddress,decoded_json.NAME);
+		db.team_creation_adding(remoteAddress,decoded_json.NAME,decoded_json.USERNAME).then(function(isHost){
+		sock.write(JSON.stringify({TYPE : "TEAM_CREATE", RES : "OK", ISHOST: isHost}));
+		console.log("PACKET SENT");
+		});
+
 	break;
 
 	default:
