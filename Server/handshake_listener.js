@@ -39,9 +39,9 @@ try{
     	sock.write(JSON.stringify({TYPE : "KEEPALIVE", RES : "OK"}));
 		break;
 
-	case "TEAM_CREATE":
+	case "CREATE_TEAM":
 		db.team_creation_adding(remoteAddress,decoded_json.NAME,decoded_json.USERNAME).then(function(isHost){
-		sock.write(JSON.stringify({TYPE : "TEAM_CREATE", RES : "OK", ISHOST: isHost}));
+		sock.write(JSON.stringify({TYPE : "CREATE_TEAM", RES : "OK", ISHOST: isHost}));
 		console.log("PACKET SENT");
 		});
 
