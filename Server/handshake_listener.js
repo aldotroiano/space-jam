@@ -44,8 +44,16 @@ try{
 		sock.write(JSON.stringify({TYPE : "CREATE_TEAM", RES : "OK", ISHOST: isHost}));
 		console.log("PACKET SENT");
 		});
+		break;
 
-	break;
+	case "LEAVE_ROOM":
+		db.leave_room(remoteAddress,decoded_json.NAME).then(function(){
+		
+		console.log("Resolved LEAVE ROOM PROMISE")
+
+		});
+		break;
+
 
 	default:
 		break;

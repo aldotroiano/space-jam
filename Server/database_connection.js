@@ -49,7 +49,6 @@ console.log("Added player to Table ONLINE_PLAYERS")
 
 		transaction.commit(function (err){
 			if(err) { reject(err); }
-			console.log("done");
 			resolve("done");
 		});
 	});
@@ -67,7 +66,6 @@ function create_team(player_id,team_name,username){
 
 		transaction.commit(function (err){
 			if(err) { reject(err); }
-			console.log("done");
 			resolve("done");
 		});
 	});
@@ -96,7 +94,7 @@ function is_host(player_id){
 }
 
 	function Player_in_team(team_name){
-	var SQLquery = "SELECT COUNT(*) AS Count FROM TEAMS WHERE TEAM_NAME = \"" +  team_name + "\"";
+		var SQLquery = "SELECT COUNT(*) AS Count FROM TEAMS WHERE TEAM_NAME = \"" +  team_name + "\"";
 
 		return new Promise((resolve, reject) => {
 		db.get(SQLquery, (err,resp) => {
@@ -106,6 +104,38 @@ function is_host(player_id){
 });
 });
 }
+	function check_for_team_mates(team_id){
+		var SQLquery = "SELECT COUNT(*) AS number FROM TEAM_PLAYER WHERE \"TEAM ID_FK\" = \"" +  team_id + "\"";
+
+		return new Promise((resolve, reject) => {
+			db.get(SQLquery, (err,resp) => {
+			if(err) { 
+				console.log(err);
+				reject(err); }
+			if(JSON.parse(resp.number) > 1){
+				resolve(1);
+			}
+			else{
+				resolve(0);
+			}
+			});
+		});
+	}
+
+
+	function get_team_ID(team_name){
+	var SQLquery = "SELECT Team_ID AS id FROM TEAMS WHERE TEAM_NAME = \"" +  team_name + "\"";
+
+		return new Promise((resolve, reject) => {
+		db.get(SQLquery, (err,resp) => {
+		if(err) { console.log(err);
+		reject(err); }
+		resolve(JSON.parse(resp.id))
+});
+});
+}
+
+
 	function team_creation_adding(remoteAddress,team_name,username){
 
 	return new Promise((resolve, reject) => {
@@ -141,4 +171,61 @@ function is_host(player_id){
 });
 };
 
-module.exports = {create_connection,add_player,remove_player,team_creation_adding};
+	function leave_room(remoteAddress,team_name){
+	
+		return new Promise((resolve, reject) => {
+			get_player_ID(remoteAddress).then(function(player_id) { 
+				console.log("in_get_playerID")
+				is_host(player_id).then(function(ishost){
+					console.log(ishost);
+					if(ishost == 1){
+						get_team_ID(team_name).then(function(team_id){
+							check_for_team_mates(team_id).then(function(resp){
+							if(resp==1){
+							
+
+							}
+							
+
+							});
+						});
+						
+
+					}
+					else if(ishost == 0){
+
+
+					}
+
+
+				});
+			});
+});
+				
+
+/*
+				Player_in_team(team_name).then(function(team_exists){
+					console.log("Player_in_team" + team_exists)		
+					if(team_exists == 1){
+						console.log("TEAM EXISTS")
+						add_to_team(player_id,team_name,username).then(function(){
+							console.log("ADDED TO TEAM");
+				});	
+						});	
+					}
+					else if(team_exists == 0){
+						create_team(player_id,team_name,username).then(function(){
+							console.log("TEAM CREATED");
+							is_host(player_id).then(function(ishost){
+								resolve(ishost);
+							});
+						});
+					}
+				},function(err){ console.log(err); reject();});
+
+});
+});*/
+}
+
+
+module.exports = {create_connection,add_player,remove_player,team_creation_adding,leave_room};
