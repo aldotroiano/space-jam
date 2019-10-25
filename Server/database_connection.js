@@ -174,15 +174,18 @@ function is_host(player_id){
 	function leave_room(remoteAddress,team_name){
 	
 		return new Promise((resolve, reject) => {
-			get_player_ID(remoteAddress).then(function(player_id) { 
-				console.log("in_get_playerID")
-				is_host(player_id).then(function(ishost){
-					console.log(ishost);
-					if(ishost == 1){
-						get_team_ID(team_name).then(function(team_id){
-							check_for_team_mates(team_id).then(function(resp){
-							if(resp==1){
+			get_player_ID(remoteAddress).then(function(player_id) { 	//Retreive player_id
+				is_host(player_id).then(function(ishost){				//Retrieve is_host value
+					if(ishost == 1){					//Check whether exiting Player is Room host
+						get_team_ID(team_name).then(function(team_id){	//Retrieve Team ID 
+							check_for_team_mates(team_id).then(function(resp){ 	//Retrieve 1 if NOT alone in team, 0 otherwise
+							if(resp == 1){				//Other people in the team
 							
+
+
+							}
+							else if(resp == 0){			//Leaving team with only one occupier, should delete team
+	
 
 							}
 							
@@ -192,7 +195,7 @@ function is_host(player_id){
 						
 
 					}
-					else if(ishost == 0){
+					else if(ishost == 0){			//If exiting player is NOT host
 
 
 					}
