@@ -104,6 +104,29 @@ function is_host(player_id){
 });
 });
 }
+
+
+function selecthost_and_leave(team_id,player_id){
+
+	return new Promise((resolve, reject) => {
+	
+		db.beginTransaction(function(err,transaction){
+		transaction.run("UPDATE TEAM_PLAYER SET is_Host = 0 WHERE is_Host = 1 AND \"TEAM ID_FK\" = \"" + team_id + "\" AND PLAYER_ID_FK = \"" + player_id + "\"");
+		transaction.run("UPDATE TEAM_PLAYER SET is_Host = 1 WHERE is_Host = 0 AND \"TEAM ID_FK\" = \"" + team_id + "\" AND PLAYER_ID_FK <> \"" + player_id + "\" LIMIT 1");
+		
+		//ERROR IS IN THE ABOVE QUERY! LIMIT 1 is not recognized when executed.
+		
+		transaction.run("DELETE FROM TEAM_PLAYER WHERE PLAYER_ID_FK = \"" + player_id + "\" AND \"TEAM ID_FK\" = \"" + team_id + "\"")
+
+
+		transaction.commit(function (err){
+			if(err) { reject(err); }
+			resolve(true);
+		});
+	});
+});
+}
+	
 	function check_for_team_mates(team_id){
 		var SQLquery = "SELECT COUNT(*) AS number FROM TEAM_PLAYER WHERE \"TEAM ID_FK\" = \"" +  team_id + "\"";
 
@@ -180,7 +203,9 @@ function is_host(player_id){
 						get_team_ID(team_name).then(function(team_id){	//Retrieve Team ID 
 							check_for_team_mates(team_id).then(function(resp){ 	//Retrieve 1 if NOT alone in team, 0 otherwise
 							if(resp == 1){				//Other people in the team
-							
+								selecthost_and_leave(team_id, player_id).then(function(val){
+									if (val) { resolve("OK") }
+							});
 
 
 							}
