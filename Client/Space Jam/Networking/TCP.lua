@@ -20,8 +20,9 @@ end
 
 function setConnection ()
 
-tcp:setoption("tcp-nodelay",true)
+  tcp:setoption("tcp-nodelay",true)
   tcp:setoption("keepalive",true)
+  --tcp:setoption("reuseport", true)
   local res = assert(tcp:connect(host, port))
 
 
@@ -76,6 +77,7 @@ function utility.choose_team()
       if json_receive.TYPE == "CREATE_TEAM" and json_receive.RES == "OK" then
         _G.is_host = json_receive.ISHOST
         print("RECEIVED TEAM JSON")
+
         timer.cancel(tmr_team)
 
         coroutine.resume(hide_screen_choose_team)
@@ -99,7 +101,6 @@ function utility.leave_room()
         timer.cancel(tmr_receive_team_confirm)
         coroutine.resume(hide_screen_team_room)
         close_connection()
-
       end
     end
   end,0)

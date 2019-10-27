@@ -1,12 +1,16 @@
-json = require "json"
 local socket = require("socket")
-local utility = {}
-local host, port = "3.10.140.235", 41555
-local periodic_timer= nil
-local tcp = nil
+local group = "226.192.1.1"
+local port = 9002
+local c = (socket.udp4())
+c:setoption("reuseport", true)
+c:setsockname("*", port)
+c:settimeout(0)
+print((c:setoption("ip-add-membership", {multiaddr = group, interface = "*"})))
 
-function handshake_management()
-tcp = assert(socket.tcp())
 
-
-end
+timer.performWithDelay( 50, function()
+    buf, ip, port = c:receivefrom()
+    if buf then
+    print("IP Address: ", buf)
+    end
+end,0)
