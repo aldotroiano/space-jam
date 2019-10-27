@@ -135,7 +135,7 @@ end
 function team_management()
 
 timer.performWithDelay(200, function()
-        composer.showOverlay("Modals.Choose_Team", {isModal = true, effect = "fromRight", time = 300} )
+        composer.showOverlay("Modals.Choose_Team", {isModal = true, effect = "fromRight", time = 200} )
         end)
 
 handshake_management()
@@ -149,7 +149,7 @@ end
 
 
 function scene:init_team_game()
-timer.performWithDelay(200, function() composer.showOverlay("Modals.Team_room", {isModal = true, effect = "fromRight", time = 300} )
+timer.performWithDelay(200, function() composer.showOverlay("Modals.Team_room", {isModal = true, effect = "fromRight", time = 200} )
 end)
 return true
 end

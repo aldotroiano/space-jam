@@ -66,7 +66,7 @@ print("START")
 end
 
 hide_screen_team_room = coroutine.create(function ()
-composer.hideOverlay("slideRight", 300)
+composer.hideOverlay("slideRight", 200)
 coroutine.yield()
 end)
 

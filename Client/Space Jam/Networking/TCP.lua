@@ -22,7 +22,7 @@ function setConnection ()
 
   tcp:setoption("tcp-nodelay",true)
   tcp:setoption("keepalive",true)
-  --tcp:setoption("reuseport", true)
+  tcp:setoption("reuseport", true)
   local res = assert(tcp:connect(host, port))
 
 

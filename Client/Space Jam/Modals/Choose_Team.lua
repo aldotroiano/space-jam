@@ -67,7 +67,7 @@ end
 
 
 function action_cancel()
-composer.hideOverlay("slideRight", 300 )
+composer.hideOverlay("slideRight", 200 )
 multi_group.alpha = 1
 end
 
