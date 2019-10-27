@@ -1,5 +1,6 @@
 json = require "json"
 local socket = require("socket")
+local udp = require("Networking.UDP")
 local utility = {}
 local host, port = "3.10.140.235", 41555
 local periodic_timer= nil
@@ -61,7 +62,7 @@ print("DISCONNECTED")
 end
 
 
---choose_team = coroutine.create(function ()
+
 function utility.choose_team()
 
   tcp:settimeout(0)
@@ -83,12 +84,9 @@ function utility.choose_team()
     end
   end,0)
 end
---  print("YIELDED")
---  coroutine.yield()
---end)
 
 
---leave_room = coroutine.create(function ()
+
 function utility.leave_room()
   tcp:settimeout(0)
   tcp:send(json.encode({TYPE = "LEAVE_ROOM", NAME = _G.team_name}))
@@ -105,8 +103,7 @@ function utility.leave_room()
       end
     end
   end,0)
---    print("YIELDED")
-  --coroutine.yield()
+
 end
 
 
