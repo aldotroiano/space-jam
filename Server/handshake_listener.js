@@ -3,6 +3,7 @@ var start_listener = function(){
 
 var net = require('net');
 var counter = 0
+
 // Configuration parameters
 var HOST = '0.0.0.0';
 var PORT = 41555;
@@ -47,13 +48,11 @@ try{
 		break;
 
 	case "LEAVE_ROOM":
-		db.leave_room(remoteAddress,decoded_json.NAME).then(function(){
-		
-		console.log("Resolved LEAVE ROOM PROMISE")
-
+		db.leave_room(remoteAddress,decoded_json.NAME).then(function(ok){
+		sock.write(JSON.stringify({TYPE : "LEAVE_ROOM", RES : "OK"}));
+		console.log("PLAYER LEFT ROOM");
 		});
 		break;
-
 
 	default:
 		break;
