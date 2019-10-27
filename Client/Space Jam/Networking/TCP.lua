@@ -1,7 +1,6 @@
-require("Networking.Server_settings")
 json = require "json"
 local socket = require("socket")
-
+local utility = {}
 local host, port = "3.10.140.235", 41555
 local periodic_timer= nil
 local tcp = nil
@@ -32,7 +31,7 @@ function Handshake()
   tcp:settimeout(0)
   tcp:send(json.encode({TYPE = 'HANDSHAKE'}))
 
-  tmr_initial_handshake = timer.performWithDelay( 200, function()
+  tmr_initial_handshake = timer.performWithDelay( 100, function()
       local x,y,message = tcp:receive()
       local handshake_json = json.decode(message)
       if handshake_json.RES == "OK" and handshake_json.TYPE == "HANDSHAKE" then
@@ -62,12 +61,14 @@ print("DISCONNECTED")
 end
 
 
-choose_team = coroutine.create(function ()
+--choose_team = coroutine.create(function ()
+function utility.choose_team()
 
   tcp:settimeout(0)
   tcp:send(json.encode({TYPE = "CREATE_TEAM", NAME = _G.team_name, USERNAME = _G.username}))
 
   tmr_team = timer.performWithDelay( 200, function()
+
     local x,y,message = tcp:receive()
     if message ~= '' and message ~= nil then
       local json_receive = json.decode(message)
@@ -75,27 +76,38 @@ choose_team = coroutine.create(function ()
         _G.is_host = json_receive.ISHOST
         print("RECEIVED TEAM JSON")
         timer.cancel(tmr_team)
-        coroutine.resume(hide_screen)
+
+        coroutine.resume(hide_screen_choose_team)
 
       end
     end
   end,0)
-end)
+end
+--  print("YIELDED")
+--  coroutine.yield()
+--end)
 
 
-leave_room = coroutine.create(function ()
-
+--leave_room = coroutine.create(function ()
+function utility.leave_room()
   tcp:settimeout(0)
   tcp:send(json.encode({TYPE = "LEAVE_ROOM", NAME = _G.team_name}))
+
   tmr_receive_team_confirm = timer.performWithDelay( 200, function()
     local x,y,message = tcp:receive()
     if message ~= '' and message ~= nil then
       local json_receive = json.decode(message)
-      if json_receive.TYPE == "LEAVE_ROOM" then
+      if json_receive.TYPE == "LEAVE_ROOM" and json_receive.RES == "OK" then
         timer.cancel(tmr_receive_team_confirm)
-        --coroutine.resume(hide_screen)
+        coroutine.resume(hide_screen_team_room)
+        close_connection()
 
       end
     end
   end,0)
-end)
+--    print("YIELDED")
+  --coroutine.yield()
+end
+
+
+return utility

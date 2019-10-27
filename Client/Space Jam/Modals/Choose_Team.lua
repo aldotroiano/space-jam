@@ -1,9 +1,10 @@
 local composer = require('composer')
+local utility = require("Networking.TCP")
 local scene = composer.newScene()
 
-local go_pressed = false
+go_pressed = false
 function scene:create(event)
-  newGroup = self.view
+  choose_team_view = self.view
 
   local modal_background = display.newRect(display.contentCenterX, display.contentCenterY,display.actualContentWidth-115,500)
   modal_background:setFillColor(0,0,0,1)
@@ -52,17 +53,16 @@ function scene:create(event)
   lbl_confirm = display.newText("J O I N  T E A M",display.contentCenterX+130,display.contentCenterY+165,"fonts/delirium.ttf",65 )
   lbl_team_name:setFillColor(255,255,255)
 
-  newGroup:insert(modal_background)
-  newGroup:insert(lbl_team_name)
-  newGroup:insert(lbl_username)
-  newGroup:insert(txt_team)
-  newGroup:insert(txt_username)
-  newGroup:insert(bx_cancel)
-  newGroup:insert(bx_confirm)
-  newGroup:insert(lbl_cancel)
-  newGroup:insert(lbl_confirm)
-  multi_group:toBack()
-  newGroup:toFront()
+  choose_team_view:insert(modal_background)
+  choose_team_view:insert(lbl_team_name)
+  choose_team_view:insert(lbl_username)
+  choose_team_view:insert(txt_team)
+  choose_team_view:insert(txt_username)
+  choose_team_view:insert(bx_cancel)
+  choose_team_view:insert(bx_confirm)
+  choose_team_view:insert(lbl_cancel)
+  choose_team_view:insert(lbl_confirm)
+
 end
 
 
@@ -78,20 +78,19 @@ if(string.len(txt_team.text) > 0 and string.len(txt_username.text) > 0 ) then
   _G.username = txt_username.text
   go_pressed = true
 
-  while coroutine.resume(choose_team) do
+    utility.choose_team()
     lbl_confirm.text = "J O I N I N G"
     print("JOINING TEAM")
-  end
-
-
 else
   txt_team.placeholder = "Enter team"
   txt_username.placeholder = "Choose Username"
 end
 end
 
-hide_screen = coroutine.create(function ()
+hide_screen_choose_team = coroutine.create(function ()
 composer.hideOverlay("slideLeft", 300)
+coroutine.yield()
+return true
 end)
 
 function scene:hide( event )
@@ -100,14 +99,17 @@ function scene:hide( event )
     local parent = event.parent  --reference to the parent scene object
 
     if ( phase == "will" ) then
-      if(go_pressed) then
 
-        parent:init_team_game()
+      if(go_pressed == true) then
         go_pressed = false
-    else
+        parent:init_team_game()
+      else
         parent:close_team_game()
+      end
+    elseif phase == "did" then
+      go_pressed = false
+    -- Called when the scene is now off screen
     end
-  end
 end
 
 function onEditing( event )
@@ -130,8 +132,7 @@ function onEditing( event )
 
     if ( "submitted" == event.phase ) then
         native.setKeyboardFocus( nil )
-        chosen_team_name = txt_team.text
-        chosen_username = txt_username.text
+
     end
 end
 scene:addEventListener( "hide", scene )

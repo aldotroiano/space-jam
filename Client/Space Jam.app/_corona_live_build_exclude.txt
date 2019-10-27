@@ -1,3 +1,0 @@
-Icon.png
-Icon-*dpi.png
-Images.xcassets

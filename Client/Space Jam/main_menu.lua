@@ -9,12 +9,12 @@ local composer = require( "composer" )
 local scene = composer.newScene()
 local widget = require "widget"
 local animation = require("plugin.animation")
-require("Networking.Handshake")
+require("Networking.TCP")
 require("Networking.internet_connection")
 local animation_triggered = false
 
 -- TODO : Check connection on Click on multiplayer  OK
--- TODO: Put players in the same team
+-- TODO: Put players in the same team  OK
 -- TODO: Reference json library lua github rxi
 --------------------------------------------
 
@@ -134,19 +134,30 @@ end
 
 function team_management()
 
-composer.showOverlay( "Modals.Choose_Team", {isModal = true, effect = "fromRight", time = 200} )
-transition.fadeOut( multi_group, { time=300 } )
+timer.performWithDelay(200, function()
+        composer.showOverlay("Modals.Choose_Team", {isModal = true, effect = "fromRight", time = 300} )
+        end)
+
 handshake_management()
+return true
 end
 
 function scene:close_team_game()
 	close_connection()
+	return true
 end
 
 
 function scene:init_team_game()
-transition.fadeIn( multi_group, { time=300 } )
-composer.showOverlay( "Modals.Team_room", {isModal = true, effect = "fromRight", time = 300} )
+timer.performWithDelay(200, function() composer.showOverlay("Modals.Team_room", {isModal = true, effect = "fromRight", time = 300} )
+end)
+return true
+end
+
+function scene:back_from_room()
+sceneGroup:toFront()
+native.showAlert( "SAD TO SEE YOU LEAVE ! ", "You Left Team: \n".._G.team_name.." " ,{ "OK" })
+return true
 end
 
 function scene:show( event )
@@ -158,6 +169,7 @@ function scene:show( event )
 	elseif phase == "did" then
 		-- Called when the scene is now on screen
 		--
+
 		-- INSERT code here to make the scene come alive
 		-- e.g. start timers, begin animation, play audio, etc.
 	end
@@ -174,6 +186,7 @@ function scene:hide( event )
 		-- INSERT code here to pause the scene
 		-- e.g. stop timers, srtop animation, unload sounds, etc.)
 	elseif phase == "did" then
+
 		-- Called when the scene is now off screen
 	end
 end
