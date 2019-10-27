@@ -1,11 +1,13 @@
 local composer = require('composer')
+local utility = require("Networking.Handshake")
 local scene = composer.newScene()
 
-local go_pressed = false
+
+local leave_pressed = false
 
 function scene:create(event)
-Team_room_group = self.view
-
+Team_room_view = self.view
+leave_pressed = false
 
   local modal_background = display.newRect(display.contentCenterX, display.contentCenterY,display.actualContentWidth-50,600)
   modal_background:setFillColor(0,0,0,1)
@@ -34,37 +36,39 @@ Team_room_group = self.view
   bx_start:setStrokeColor(255,255,255)
   bx_start:addEventListener( "tap" , start_onPressed)
 
-  local lbl_leave_room = display.newText("L E A V E",105,display.contentCenterY+210,"fonts/delirium.ttf",75 )
-  lbl_leave_room.anchorX = 0
+  lbl_leave_room = display.newText("L E A V E",170,display.contentCenterY+210,"fonts/delirium.ttf",75 )
+  lbl_leave_room.anchorX = 0.5
   lbl_leave_room:setFillColor(255,255,255)
 
   local lbl_start = display.newText("S T A R T",display.actualContentWidth-105,display.contentCenterY+210,"fonts/delirium.ttf",75 )
   lbl_start.anchorX = 1
   lbl_start:setFillColor(255,255,255)
 
-  Team_room_group:insert(modal_background)
-  Team_room_group:insert(lbl_team_name)
-  Team_room_group:insert(bx_leave_room)
-  Team_room_group:insert(bx_start)
-  Team_room_group:insert(lbl_leave_room)
-  Team_room_group:insert(lbl_start)
-  multi_group:toBack()
-  Team_room_group:toFront()
+  Team_room_view:insert(modal_background)
+  Team_room_view:insert(lbl_team_name)
+  Team_room_view:insert(bx_leave_room)
+  Team_room_view:insert(bx_start)
+  Team_room_view:insert(lbl_leave_room)
+  Team_room_view:insert(lbl_start)
+
+  --Team_room_view:toFront()
 end
 
 function leave_onPressed ()
-
-coroutine.resume(leave_room)
-
+leave_pressed = true
+utility.leave_room()
+lbl_leave_room.text = "L E A V I N G"
 end
 
 
 function start_onPressed ()
-
-
+print("START")
 end
 
-
+hide_screen_team_room = coroutine.create(function ()
+composer.hideOverlay("slideRight", 300)
+coroutine.yield()
+end)
 
 function scene:hide( event )
     local full_group = self.view
@@ -73,7 +77,15 @@ function scene:hide( event )
 
     if ( phase == "will" ) then
 
-    end
+      elseif phase == "did" then
+        if(leave_pressed) then
+          leave_pressed = false
+          parent:back_from_room()
+
+        end
+
+      -- Called when the scene is now off screen
+      end
 end
 
 
