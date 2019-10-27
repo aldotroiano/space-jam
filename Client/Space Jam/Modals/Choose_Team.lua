@@ -1,5 +1,5 @@
 local composer = require('composer')
-local utility = require("Networking.Handshake")
+local utility = require("Networking.TCP")
 local scene = composer.newScene()
 
 go_pressed = false
@@ -67,7 +67,6 @@ end
 
 
 function action_cancel()
-  print("CANCEL PRESSED")
 composer.hideOverlay("slideRight", 300 )
 multi_group.alpha = 1
 end
@@ -103,12 +102,9 @@ function scene:hide( event )
 
       if(go_pressed == true) then
         go_pressed = false
-
         parent:init_team_game()
-
       else
         parent:close_team_game()
-
       end
     elseif phase == "did" then
       go_pressed = false

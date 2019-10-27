@@ -1,4 +1,3 @@
-require("Networking.Server_settings")
 json = require "json"
 local socket = require("socket")
 local utility = {}
@@ -77,6 +76,7 @@ function utility.choose_team()
         _G.is_host = json_receive.ISHOST
         print("RECEIVED TEAM JSON")
         timer.cancel(tmr_team)
+
         coroutine.resume(hide_screen_choose_team)
 
       end
@@ -100,7 +100,8 @@ function utility.leave_room()
       if json_receive.TYPE == "LEAVE_ROOM" and json_receive.RES == "OK" then
         timer.cancel(tmr_receive_team_confirm)
         coroutine.resume(hide_screen_team_room)
-        print("resumed")
+        close_connection()
+
       end
     end
   end,0)
