@@ -1,11 +1,13 @@
-
+local json = require "json"
 local socket = require("socket")
-
+local utility = {}
 udp = socket.udp()
 udp:setpeername("3.10.140.235", 55000)
 udp:settimeout(0)
 
-udp:send("Data!")
+function utility.startUDP()
+  udp:send(json.encode({TYPE = 'INITIATE',TCPADDRESS = _G.remoteAddress_TCP}))
+end
 
 timer.performWithDelay( 50, function()
 
@@ -15,3 +17,5 @@ timer.performWithDelay( 50, function()
   end
 
 end,0)
+
+return utility

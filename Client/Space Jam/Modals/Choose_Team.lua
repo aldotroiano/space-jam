@@ -1,5 +1,5 @@
 local composer = require('composer')
-local utility = require("Networking.TCP")
+local utility_TCP = require("Networking.TCP")
 local scene = composer.newScene()
 
 go_pressed = false
@@ -78,7 +78,7 @@ if(string.len(txt_team.text) > 0 and string.len(txt_username.text) > 0 ) then
   _G.username = txt_username.text
   go_pressed = true
 
-    utility.choose_team()
+    utility_TCP.choose_team()
     lbl_confirm.text = "J O I N I N G"
     print("JOINING TEAM")
 else

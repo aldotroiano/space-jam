@@ -1,9 +1,12 @@
 local composer = require('composer')
-local utility = require("Networking.TCP")
+local utility_TCP = require("Networking.TCP")
+local utility_UDP = require("Networking.UDP")
 local scene = composer.newScene()
 
 
 local leave_pressed = false
+local max_players = 4
+array_players = {}
 
 function scene:create(event)
 Team_room_view = self.view
@@ -44,6 +47,7 @@ leave_pressed = false
   lbl_start.anchorX = 1
   lbl_start:setFillColor(255,255,255)
 
+  utility_UDP.startUDP()
   Team_room_view:insert(modal_background)
   Team_room_view:insert(lbl_team_name)
   Team_room_view:insert(bx_leave_room)
@@ -56,7 +60,7 @@ end
 
 function leave_onPressed ()
 leave_pressed = true
-utility.leave_room()
+utility_TCP.leave_room()
 lbl_leave_room.text = "L E A V I N G"
 end
 

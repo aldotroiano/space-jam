@@ -1,4 +1,4 @@
-json = require "json"
+local json = require "json"
 local socket = require("socket")
 local udp = require("Networking.UDP")
 local utility = {}
@@ -38,6 +38,7 @@ function Handshake()
       local handshake_json = json.decode(message)
       if handshake_json.RES == "OK" and handshake_json.TYPE == "HANDSHAKE" then
         print("CONNECTED")
+        _G.remoteAddress_TCP = handshake_json.IPADDRESS
         timer.cancel( tmr_initial_handshake )
 
       end
