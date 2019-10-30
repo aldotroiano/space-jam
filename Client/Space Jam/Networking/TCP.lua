@@ -33,7 +33,7 @@ function Handshake()
   tcp:settimeout(0)
   tcp:send(json.encode({TYPE = 'HANDSHAKE'}))
 
-  tmr_initial_handshake = timer.performWithDelay( 100, function()
+  tmr_initial_handshake = timer.performWithDelay( 200, function()
       local x,y,message = tcp:receive()
       local handshake_json = json.decode(message)
       if handshake_json.RES == "OK" and handshake_json.TYPE == "HANDSHAKE" then

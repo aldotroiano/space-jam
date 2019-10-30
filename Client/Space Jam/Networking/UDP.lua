@@ -1,16 +1,17 @@
-local socket = require("socket")
-local group = "226.192.1.1"
-local port = 9002
-local c = (socket.udp4())
-c:setoption("reuseport", true)
-c:setsockname("*", port)
-c:settimeout(0)
-print((c:setoption("ip-add-membership", {multiaddr = group, interface = "*"})))
 
+local socket = require("socket")
+
+udp = socket.udp()
+udp:setpeername("3.10.140.235", 55000)
+udp:settimeout(0)
+
+udp:send("Data!")
 
 timer.performWithDelay( 50, function()
-    buf, ip, port = c:receivefrom()
-    if buf then
-    print("IP Address: ", buf)
-    end
+
+  data = udp:receive()
+  if data then
+      print("Received: ", data)
+  end
+
 end,0)
