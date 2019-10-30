@@ -226,8 +226,7 @@ function delete_team(team_id,player_id,remoteAddress){
 	function leave_room(remoteAddress,team_name){
 	
 		return new Promise((resolve, reject) => {
-		var team_ID_global;
-		var player_ID_global;
+		var team_ID_global; var player_ID_global;
 			get_player_ID(remoteAddress).then(function(player_id) { 	//Retreive player_id
 				player_ID_global = player_id;
 				is_host(player_id).then(function(ishost){				//Retrieve is_host value
@@ -246,19 +245,16 @@ function delete_team(team_id,player_id,remoteAddress){
 									if (val) { resolve ("OK") }
 									else { reject(0) }
 								});
-							}
-						});
-						});
-					}
+							}});
+						});}
 					else if(ishost == 0){			//If exiting player is NOT host
 							delete_player_from_team(team_ID_global,player_ID_global,remoteAddress).then(function(val){
 							if (val) {resolve ("OK")}
 							else { reject (0) }
 							});
 					}
-				});
-			});
-});
+				});});
+		});
 }
 
 

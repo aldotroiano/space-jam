@@ -4,6 +4,6 @@ var udp = require('./udp.js');
 
 db_con.create_connection()
 client_listener.start_listener();
-udp.send_UDP_message();
+
 
 
