@@ -12,7 +12,7 @@ var PORT = 41555;
 var server = net.createServer(onClientConnected);  
  
 server.listen(PORT, HOST, function() {  
-  console.log('server listening on %j', server.address());
+  console.log('TCP server listening on: %s', PORT);
 });
  
 function onClientConnected(sock) {  
@@ -31,8 +31,8 @@ try{
 
   	case "HANDSHAKE":
       	console.log('Received IH from: %s', remoteAddress);
-      	db.add_player(remoteAddress,);
-      	sock.write(JSON.stringify({TYPE : "HANDSHAKE", RES : "OK"}));
+      	db.add_player(remoteAddress);
+      	sock.write(JSON.stringify({TYPE : "HANDSHAKE", RES : "OK", IPADDRESS: remoteAddress}));
     	break;
 
   	case "KEEPALIVE":

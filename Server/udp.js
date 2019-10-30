@@ -1,3 +1,4 @@
+var db = require('./database_connection.js');
 var dgram = require('dgram');
 var server = dgram.createSocket('udp4');
 
@@ -7,23 +8,39 @@ server.close();
 });
 
 server.on('message', (msg,rinfo) => {
-console.log('server got: %s from %s : %s',msg,rinfo.address,rinfo.port);
-send_UDP_message(rinfo.address,rinfo.port);
+try{
+	decoded_json = JSON.parse(msg);
+
+	switch (decoded_json.TYPE){
+
+  	case "INITIATE":
+      	console.log('Received INITIATE UDP FROM from: %s : %s', rinfo.address,rinfo.port);
+        setInterval(send,1000);
+    	break;
+
+		default:
+			break;
+	}
+}
+catch (error){
+	console.log(error);
+}
+
 });
 
 server.on('listening', () => {
 const address = server.address();
-console.log('server listening %s : %s',address.address,address.port);
+console.log('UDP server listening on port: %s',address.port);
 });
 
 server.bind(55000);
 
-function send_UDP_message(address,port){
-for (var i = 0; i < 50; i++){
-	server.send('HELLO WORLD', 0, 12, port, address);
-	console.log("MESSAGE SENT!!!!!!!")
-}
+function send(msg,address,port){
+
+	server.send(msg, 0, msg.length, port, address))
+	console.log("Sent!")
+
 }
 
 
-module.exports = {send_UDP_message};
+module.exports = {send};

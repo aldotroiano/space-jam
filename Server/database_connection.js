@@ -16,7 +16,7 @@ var create_connection = function(){
 }
 
 	function add_player(remoteAddress,player_name){
-	var query_insert = "INSERT INTO ONLINE_PLAYERS('IP ADDRESS') VALUES ('"+ remoteAddress +"');";
+	var query_insert = "INSERT INTO ONLINE_PLAYERS('TCP ADDRESS') VALUES ('"+ remoteAddress +"');";
 
 	db.exec(query_insert, function(err) {
 	if (err) {
@@ -72,7 +72,7 @@ function create_team(player_id,team_name,username){
 });}
 
 	function get_player_ID(remoteAddress){
-	var SQLquery = "SELECT ID as id FROM ONLINE_PLAYERS WHERE \"IP ADDRESS\" = \"" +  remoteAddress + "\" ";
+	var SQLquery = "SELECT ID as id FROM ONLINE_PLAYERS WHERE \"TCP ADDRESS\" = \"" +  remoteAddress + "\" ";
 
 		return new Promise((resolve, reject) => {
 		db.get(SQLquery, (err,resp) => {
@@ -115,7 +115,7 @@ function selecthost_and_leave(team_id,player_id,remoteAddress){
 		transaction.run("UPDATE TEAM_PLAYER SET is_Host = 1 WHERE \"TEAM ID_FK\" = \"" + team_id + "\" AND PLAYER_ID_FK = (SELECT PLAYER_ID_FK FROM TEAM_PLAYER WHERE PLAYER_ID_FK <> \"" + player_id + "\" AND \"TEAM ID_FK\" = \"" + team_id + "\" AND is_Host = 0 LIMIT 1)");
 		
 		transaction.run("DELETE FROM TEAM_PLAYER WHERE PLAYER_ID_FK = \"" + player_id + "\" AND \"TEAM ID_FK\" = \"" + team_id + "\"")
-		transaction.run("DELETE FROM ONLINE_PLAYERS WHERE \"IP ADDRESS\" = \"" + remoteAddress + "\"")
+		transaction.run("DELETE FROM ONLINE_PLAYERS WHERE \"TCP ADDRESS\" = \"" + remoteAddress + "\"")
 
 		transaction.commit(function (err){
 			if(err) { reject(err); }
@@ -132,7 +132,7 @@ function delete_player_from_team(team_id,player_id,remoteAddress){
 		db.beginTransaction(function(err,transaction){
 		
 		transaction.run("DELETE FROM TEAM_PLAYER WHERE PLAYER_ID_FK = \"" + player_id + "\" AND \"TEAM ID_FK\" = \"" + team_id + "\"")
-		transaction.run("DELETE FROM ONLINE_PLAYERS WHERE \"IP ADDRESS\" = \"" + remoteAddress + "\"")
+		transaction.run("DELETE FROM ONLINE_PLAYERS WHERE \"TCP ADDRESS\" = \"" + remoteAddress + "\"")
 
 		transaction.commit(function (err){
 			if(err) { reject(err); }
@@ -148,7 +148,7 @@ function delete_team(team_id,player_id,remoteAddress){
 		db.beginTransaction(function(err,transaction){
 		transaction.run("DELETE FROM TEAM_PLAYER WHERE PLAYER_ID_FK = \"" + player_id + "\" AND \"TEAM ID_FK\" = \"" + team_id + "\"")
 		transaction.run("DELETE FROM TEAMS WHERE \"TEAM ID_FK\" = \"" + team_id + "\" ")
-		transaction.run("DELETE FROM ONLINE_PLAYERS WHERE \"IP ADDRESS\" = \"" + remoteAddress + "\"")
+		transaction.run("DELETE FROM ONLINE_PLAYERS WHERE \"TCP ADDRESS\" = \"" + remoteAddress + "\"")
 
 
 		transaction.commit(function (err){
