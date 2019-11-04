@@ -54,6 +54,21 @@ console.log("Added player to Table ONLINE_PLAYERS")
 });
 }
 
+		function in_a_team(player_id){
+	var SQLquery = "SELECT COUNT(*) AS Count FROM TEAM_PLAYER WHERE PLAYER_ID_FK  = '" +  player_id + "';";
+
+		return new Promise((resolve, reject) => {
+		db.get(SQLquery, (err,resp) => {
+		if(err) { console.log(err);
+		reject(err); }
+		if(JSON.parse(resp.Count) == 1){
+		resolve(true);
+		}
+		else{ resolve(0); }
+});
+});
+}
+
 	function add_to_team(player_id,team_name,username){
 
 	return new Promise((resolve, reject) => {
@@ -238,41 +253,51 @@ function delete_team(team_id,player_id,remoteAddress){
 });
 };
 
-	function leave_room(remoteAddress,team_name){
+	function leave_room(remoteAddress){
 	
 		return new Promise((resolve, reject) => {
-		var team_ID_global; var player_ID_global;
+			var team_ID_global; var player_ID_global;
 			get_player_ID(remoteAddress).then(function(player_id) { 	//Retreive player_id
 				player_ID_global = player_id;
-				is_host(player_id).then(function(ishost){				//Retrieve is_host value
-					if(ishost == 1){					//Check whether exiting Player is Room host
-						get_team_ID(player_id).then(function(team_id){	//Retrieve Team ID 
-							team_ID_global = team_id;
-							console.log(team_id);
-							check_for_team_mates(team_id).then(function(resp){ 	//Retrieve 1 if NOT alone in team, 0 otherwise
-							if(resp == 1){				//Other people in the team
-								selecthost_and_leave(team_id, player_id, remoteAddress).then(function(val){
-									if (val) { resolve("OK") }
-									else{ reject(0)}
+				in_a_team(player_id).then(function(isinteam){
+					if(isinteam){
+						is_host(player_id).then(function(ishost){				//Retrieve is_host value
+							if(ishost == 1){					//Check whether exiting Player is Room host
+								get_team_ID(player_id).then(function(team_id){	//Retrieve Team ID 
+								team_ID_global = team_id;
+								console.log(team_id);
+								check_for_team_mates(team_id).then(function(resp){ 	//Retrieve 1 if NOT alone in team, 0 otherwise
+								if(resp == 1){				//Other people in the team
+									selecthost_and_leave(team_id, player_id, remoteAddress).then(function(val){
+										if (val) { resolve("OK") }
+										else{ reject(0)}
+									});
+								}
+								else if(resp == 0){			//Leaving team with only one occupier, should delete team
+									delete_team(team_id,player_id,remoteAddress).then(function(val){
+										console.log("ROMISE THAT DELETES TEAM");
+										if (val) { resolve ("OK") }
+										else { reject(0) }
+									});
+								}});
+							});}
+						else if(ishost == 0){			//If exiting player is NOT host
+								delete_player_from_team(team_ID_global,player_ID_global,remoteAddress).then(function(val){
+								if (val) {resolve ("OK")}
+								else { reject (0) }
 								});
-							}
-							else if(resp == 0){			//Leaving team with only one occupier, should delete team
-								delete_team(team_id,player_id,remoteAddress).then(function(val){
-									console.log("ROMISE THAT DELETES TEAM");
-									if (val) { resolve ("OK") }
-									else { reject(0) }
-								});
-							}});
-						});}
-					else if(ishost == 0){			//If exiting player is NOT host
-							delete_player_from_team(team_ID_global,player_ID_global,remoteAddress).then(function(val){
-							if (val) {resolve ("OK")}
-							else { reject (0) }
-							});
+						}
+						});
 					}
-				});});
+					else{
+						resolve();
+					}
+				});
+			});
+			
 		});
 }
+
 
 
 function initiate_udp(tcp_address,udp_address) {

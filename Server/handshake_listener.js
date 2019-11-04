@@ -16,7 +16,7 @@ server.listen(PORT, HOST, function() {
 });
  
 function onClientConnected(sock) {  
-
+	sock.setNoDelay(true);
   var remoteAddress = sock.remoteAddress + ':' + sock.remotePort;
   counter = counter + 1;
   console.log('NEW CONNECTED CLIENT: %s', remoteAddress);
@@ -26,7 +26,7 @@ function onClientConnected(sock) {
 
 try{
 	decoded_json = JSON.parse(data);
-
+	
 	switch (decoded_json.TYPE){
 
   	case "HANDSHAKE":
