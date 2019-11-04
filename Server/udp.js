@@ -14,8 +14,13 @@ try{
 	switch (decoded_json.TYPE){
 
   	case "INITIATE":
-      	console.log('Received INITIATE UDP FROM from: %s : %s', rinfo.address,rinfo.port);
-        setInterval(send,1000);
+      	console.log('Received INITIATE UDP from: %s : %s', rinfo.address,rinfo.port);
+      	var addr = String(String(rinfo.address) + ":" + String(rinfo.port));
+      	db.initiate_udp(decoded_json.TCPADDRESS,addr).then(function(){
+				send(JSON.stringify({TYPE : "INITIATE", RES : "OK"}),rinfo.address,rinfo.port);
+				});
+      	
+        
     	break;
 
 		default:
@@ -37,7 +42,7 @@ server.bind(55000);
 
 function send(msg,address,port){
 
-	server.send(msg, 0, msg.length, port, address))
+	server.send(msg, port, address);
 	console.log("Sent!")
 
 }

@@ -29,7 +29,7 @@ console.log("Added player to Table ONLINE_PLAYERS")
 
 	function remove_player(remoteAddress){
 
-	var query_delete = "DELETE FROM ONLINE_PLAYERS WHERE \"IP Address\" = '"+ remoteAddress +"';";
+	var query_delete = "DELETE FROM ONLINE_PLAYERS WHERE \"TCP Address\" = '"+ remoteAddress +"';";
 
 	db.exec(query_delete, function(err) {
 		if (err) {
@@ -38,6 +38,21 @@ console.log("Added player to Table ONLINE_PLAYERS")
 	});
 	console.log("Deleted player from Table ONLINE_PLAYERS")
 	}
+
+		function player_exists(remoteAddress){
+	var SQLquery = "SELECT COUNT(*) AS Count FROM ONLINE_PLAYERS WHERE \"TCP Address\" = '" +  remoteAddress + "';";
+
+		return new Promise((resolve, reject) => {
+		db.get(SQLquery, (err,resp) => {
+		if(err) { console.log(err);
+		reject(err); }
+		if(JSON.parse(resp.Count) == 1){
+		resolve(1);
+		}
+		else{ resolve(0); }
+});
+});
+}
 
 	function add_to_team(player_id,team_name,username){
 
@@ -147,7 +162,7 @@ function delete_team(team_id,player_id,remoteAddress){
 	
 		db.beginTransaction(function(err,transaction){
 		transaction.run("DELETE FROM TEAM_PLAYER WHERE PLAYER_ID_FK = \"" + player_id + "\" AND \"TEAM ID_FK\" = \"" + team_id + "\"")
-		transaction.run("DELETE FROM TEAMS WHERE \"TEAM ID_FK\" = \"" + team_id + "\" ")
+		transaction.run("DELETE FROM TEAMS WHERE TEAM_ID = '" + team_id + "';")
 		transaction.run("DELETE FROM ONLINE_PLAYERS WHERE \"TCP ADDRESS\" = \"" + remoteAddress + "\"")
 
 
@@ -178,8 +193,8 @@ function delete_team(team_id,player_id,remoteAddress){
 	}
 
 
-	function get_team_ID(team_name){
-	var SQLquery = "SELECT Team_ID AS id FROM TEAMS WHERE TEAM_NAME = \"" +  team_name + "\"";
+	function get_team_ID(player_id){
+	var SQLquery = "SELECT \"Team ID_FK\" AS id FROM TEAM_PLAYER WHERE \"PLAYER_ID_FK\" = '" +  player_id + "';";
 
 		return new Promise((resolve, reject) => {
 		db.get(SQLquery, (err,resp) => {
@@ -231,8 +246,9 @@ function delete_team(team_id,player_id,remoteAddress){
 				player_ID_global = player_id;
 				is_host(player_id).then(function(ishost){				//Retrieve is_host value
 					if(ishost == 1){					//Check whether exiting Player is Room host
-						get_team_ID(team_name).then(function(team_id){	//Retrieve Team ID 
+						get_team_ID(player_id).then(function(team_id){	//Retrieve Team ID 
 							team_ID_global = team_id;
+							console.log(team_id);
 							check_for_team_mates(team_id).then(function(resp){ 	//Retrieve 1 if NOT alone in team, 0 otherwise
 							if(resp == 1){				//Other people in the team
 								selecthost_and_leave(team_id, player_id, remoteAddress).then(function(val){
@@ -242,6 +258,7 @@ function delete_team(team_id,player_id,remoteAddress){
 							}
 							else if(resp == 0){			//Leaving team with only one occupier, should delete team
 								delete_team(team_id,player_id,remoteAddress).then(function(val){
+									console.log("ROMISE THAT DELETES TEAM");
 									if (val) { resolve ("OK") }
 									else { reject(0) }
 								});
@@ -258,4 +275,21 @@ function delete_team(team_id,player_id,remoteAddress){
 }
 
 
-module.exports = {create_connection,add_player,remove_player,team_creation_adding,leave_room};
+function initiate_udp(tcp_address,udp_address) {
+
+var SQL_update = ("UPDATE ONLINE_PLAYERS SET \"UDP ADDRESS\" = '" + String(udp_address) + "' WHERE \"TCP ADDRESS\" = '"+ String(tcp_address) +"';");
+	return new Promise((resolve, reject) => {
+	db.run(SQL_update, function(err) {
+	if (err) {
+		console.log(err.message);
+		reject();
+		}
+	resolve();
+});
+});
+
+
+}
+
+
+module.exports = {create_connection,add_player,remove_player,player_exists,team_creation_adding,leave_room,initiate_udp};

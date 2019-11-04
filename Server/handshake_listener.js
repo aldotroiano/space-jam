@@ -51,6 +51,7 @@ try{
 		db.leave_room(remoteAddress,decoded_json.NAME).then(function(ok){
 		sock.write(JSON.stringify({TYPE : "LEAVE_ROOM", RES : "OK"}));
 		console.log("PLAYER LEFT ROOM");
+		counter -= 1;
 		});
 		break;
 
@@ -65,11 +66,30 @@ console.log(error);
 
 
   sock.on('close',  function () {
-    console.log('connection from %s closed', remoteAddress);
-	db.remove_player(remoteAddress)
-    counter = counter - 1;
-    console.log('Connected clients: %i', counter)
+ 		try{
+		db.player_exists(remoteAddress).then(function(exists){
+
+			if(exists == 1){
+				db.leave_room(remoteAddress).then(function(ok){
+		 		db.remove_player(remoteAddress);
+    		counter = counter - 1;
+    		console.log('connection from %s closed', remoteAddress);
+  			console.log('Connected clients: %i', counter);
+				});
+			}
+			else{
+			console.log('connection from %s closed', remoteAddress);
+			console.log('Connected clients: %i', counter);
+			}
+		});
+		}
+		catch(e){
+		console.log(e);
+		}
   });
+ 
+
+ 
   sock.on('error', function (err) {
     console.log('Connection %s error: %s', remoteAddress, err.message);
   });
