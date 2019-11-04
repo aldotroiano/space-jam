@@ -7,8 +7,11 @@ udp:settimeout(0)
 
 function utility.startUDP()
   udp:send(json.encode({TYPE = 'INITIATE',TCPADDRESS = _G.remoteAddress_TCP}))
+  print("UDP STARTED")
+  receive()
 end
 
+function receive()
 timer.performWithDelay( 50, function()
 
   data = udp:receive()
@@ -17,5 +20,5 @@ timer.performWithDelay( 50, function()
   end
 
 end,0)
-
+end
 return utility

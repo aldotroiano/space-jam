@@ -47,7 +47,7 @@ leave_pressed = false
   lbl_start.anchorX = 1
   lbl_start:setFillColor(255,255,255)
 
-  utility_UDP.startUDP()
+
   Team_room_view:insert(modal_background)
   Team_room_view:insert(lbl_team_name)
   Team_room_view:insert(bx_leave_room)
@@ -74,6 +74,22 @@ composer.hideOverlay("slideRight", 200)
 coroutine.yield()
 end)
 
+function scene:show( event )
+	local sceneGroup = self.view
+	local phase = event.phase
+
+	if phase == "will" then
+
+		utility_UDP.startUDP()
+	elseif phase == "did" then
+		-- Called when the scene is now on screen
+		--
+
+		-- INSERT code here to make the scene come alive
+		-- e.g. start timers, begin animation, play audio, etc.
+	end
+end
+
 function scene:hide( event )
     local full_group = self.view
     local phase = event.phase
@@ -96,4 +112,5 @@ end
 scene:addEventListener( "hide", scene )
 scene:addEventListener('create' , scene)
 scene:addEventListener( "destroy", scene )
+scene:addEventListener( "show", scene )
 return scene
