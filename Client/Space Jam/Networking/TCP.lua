@@ -9,22 +9,37 @@ local tcp = nil
 function handshake_management()
 tcp = assert(socket.tcp())
 
-    if setConnection() then
-     Handshake()
+tmr_handshake_management = timer.performWithDelay(100, function()
 
-    else
-      handshake_management()
-            -- TODO: ADD loop that retries the handshake from the start DONE
+  if setConnection() then
+   Handshake()
+   timer.cancel(tmr_handshake_management)
+  else
+    native.showAlert("Server Unreachable", { "OK" })
+    -- TODO: ADD loop that retries the handshake from the start DONE
   end
+
+
+
+
+end,0)
+
+
+
 end
 
 function setConnection ()
-
+  local res = 0
   tcp:setoption("tcp-nodelay",true)
   tcp:setoption("keepalive",true)
   tcp:setoption("reuseport", true)
-  local res = assert(tcp:connect(host, port))
+  if assert(tcp:connect(host, port)) then
+    res = 1
+    print("Res 1")
+  else
+    native.showAlert( "Error", "Cannot connect to Server" ,{ "OK" })
 
+end
 
 return res
 end
@@ -32,18 +47,18 @@ end
 function Handshake()
   tcp:settimeout(0)
   tcp:send(json.encode({TYPE = 'HANDSHAKE'}))
-
+  local counter = 0;
   tmr_initial_handshake = timer.performWithDelay( 200, function()
-      local x,y,message = tcp:receive()
-      local handshake_json = json.decode(message)
+
+      if message ~= '' and message ~= nil then
       if handshake_json.RES == "OK" and handshake_json.TYPE == "HANDSHAKE" then
         print("CONNECTED")
         _G.remoteAddress_TCP = handshake_json.IPADDRESS
         timer.cancel( tmr_initial_handshake )
-
       end
-
+    end
   end,0)
+
 end
 
 co = coroutine.create(function ()

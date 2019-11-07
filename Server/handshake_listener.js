@@ -7,21 +7,21 @@ var counter = 0
 // Configuration parameters
 var HOST = '0.0.0.0';
 var PORT = 41555;
- 
-// Create Server instance 
-var server = net.createServer(onClientConnected);  
- 
-server.listen(PORT, HOST, function() {  
+
+// Create Server instance
+var server = net.createServer(onClientConnected);
+
+server.listen(PORT, HOST, function() {
   console.log('TCP server listening on: %s', PORT);
 });
- 
-function onClientConnected(sock) {  
+
+function onClientConnected(sock) {
 
   var remoteAddress = sock.remoteAddress + ':' + sock.remotePort;
   counter = counter + 1;
   console.log('NEW CONNECTED CLIENT: %s', remoteAddress);
   console.log('Connected clients: %i', counter);
- 
+
   sock.on('data', function(data) {
 
 try{
@@ -87,9 +87,8 @@ console.log(error);
 		console.log(e);
 		}
   });
- 
 
- 
+
   sock.on('error', function (err) {
     console.log('Connection %s error: %s', remoteAddress, err.message);
   });

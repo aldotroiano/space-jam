@@ -2,7 +2,7 @@ function check_internet_connection()
 local socket = require("socket")
 
 local check = socket.tcp()
-check:settimeout(1000)         
+check:settimeout(1000)
 
 local testResult = check:connect("www.google.com", 80)
 print(testResult)
@@ -14,5 +14,5 @@ else
 end
 
 check:close()
-return testResult
+return 1
 end
