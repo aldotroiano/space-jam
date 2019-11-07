@@ -14,5 +14,5 @@ else
 end
 
 check:close()
-return 1
+return testResult
 end
