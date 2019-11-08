@@ -9,39 +9,26 @@ local tcp = nil
 function handshake_management()
 tcp = assert(socket.tcp())
 
-tmr_handshake_management = timer.performWithDelay(100, function()
 
   if setConnection() then
    Handshake()
-   timer.cancel(tmr_handshake_management)
-  else
-    native.showAlert("Server Unreachable", { "OK" })
-    -- TODO: ADD loop that retries the handshake from the start DONE
-  end
+   return true
+ else
+   native.showAlert( "Error", "Cannot connect to Server" ,{ "OK" })
+   return false
 
-
-
-
-end,0)
-
-
-
+ end
 end
 
 function setConnection ()
-  local res = 0
+  local res = false
   tcp:setoption("tcp-nodelay",true)
   tcp:setoption("keepalive",true)
   tcp:setoption("reuseport", true)
-  if assert(tcp:connect(host, port)) then
-    res = 1
-    print("Res 1")
-  else
-    native.showAlert( "Error", "Cannot connect to Server" ,{ "OK" })
-
-end
-
-return res
+  if tcp:connect(host, port) then
+    return true
+  end
+return false
 end
 
 function Handshake()
@@ -49,7 +36,7 @@ function Handshake()
   tcp:send(json.encode({TYPE = 'HANDSHAKE'}))
   local counter = 0;
   tmr_initial_handshake = timer.performWithDelay( 200, function()
-
+print("inhand")
       if message ~= '' and message ~= nil then
       if handshake_json.RES == "OK" and handshake_json.TYPE == "HANDSHAKE" then
         print("CONNECTED")

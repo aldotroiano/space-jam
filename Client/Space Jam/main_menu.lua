@@ -133,12 +133,12 @@ end
 end
 
 function team_management()
-
+if handshake_management() then
 timer.performWithDelay(200, function()
-        composer.showOverlay("Modals.Choose_Team", {isModal = true, effect = "fromRight", time = 200} )
+composer.showOverlay("Modals.Choose_Team", {isModal = true, effect = "fromRight", time = 200} )
         end)
+end
 
-handshake_management()
 return true
 end
 
