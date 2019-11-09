@@ -10,7 +10,7 @@ local scene = composer.newScene()
 local widget = require "widget"
 local animation = require("plugin.animation")
 require("Networking.TCP")
-require("Networking.internet_connection")
+require("Networking.ping")
 local animation_triggered = false
 
 -- TODO : Check connection on Click on multiplayer  OK
