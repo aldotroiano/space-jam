@@ -128,15 +128,14 @@ if check_internet_connection() == 1 then
     lbl_multi_team.alpha, lbl_multi_online.alpha = 0,0
 end
 else
-	native.showAlert( "No Internet Connection", "Please check your internet connection and retry" ,{ "OK" })
+	native.showAlert( "ALERT", "Check your Internet Connection and retry" ,{ "GOT IT" })
 end
 end
 
 function team_management()
-if handshake_management() then
+if handshake_management()  then
 timer.performWithDelay(200, function()
-composer.showOverlay("Modals.Choose_Team", {isModal = true, effect = "fromRight", time = 200} )
-        end)
+composer.showOverlay("Modals.Choose_Team", {isModal = true, effect = "fromRight", time = 200})end)
 end
 
 return true
@@ -149,14 +148,13 @@ end
 
 
 function scene:init_team_game()
-timer.performWithDelay(200, function() composer.showOverlay("Modals.Team_room", {isModal = true, effect = "fromRight", time = 200} )
-end)
+timer.performWithDelay(200, function() composer.showOverlay("Modals.Team_room", {isModal = true, effect = "fromRight", time = 200} )end)
 return true
 end
 
 function scene:back_from_room()
 sceneGroup:toFront()
-native.showAlert( "SAD TO SEE YOU LEAVE ! ", "You Left Team: \n".._G.team_name.." " ,{ "OK" })
+native.showAlert( "ALERT", "You Left Team: \n".._G.team_name.." " ,{ "OK" })
 return true
 end
 

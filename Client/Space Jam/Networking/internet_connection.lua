@@ -3,16 +3,11 @@ local socket = require("socket")
 
 local check = socket.tcp()
 check:settimeout(1000)
-
-local testResult = check:connect("www.google.com", 80)
-print(testResult)
-if (testResult == 1) then
-    print("Internet OK")
-else
+local available = check:connect("www.google.com", 80)
+if available ~= 1 then
    print("Internet NOT OK")
-    testResult = 0
+    available = 0
 end
-
 check:close()
-return testResult
+return available
 end

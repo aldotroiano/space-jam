@@ -3,12 +3,10 @@ local socket = require("socket")
 local udp = require("Networking.UDP")
 local utility = {}
 local host, port = "3.10.140.235", 41555
-local periodic_timer= nil
 local tcp = nil
 
 function handshake_management()
 tcp = assert(socket.tcp())
-
 
   if setConnection() then
    Handshake()
@@ -16,49 +14,36 @@ tcp = assert(socket.tcp())
  else
    native.showAlert( "Error", "Cannot connect to Server" ,{ "OK" })
    return false
-
- end
+end
 end
 
 function setConnection ()
-  local res = false
   tcp:setoption("tcp-nodelay",true)
   tcp:setoption("keepalive",true)
   tcp:setoption("reuseport", true)
   if tcp:connect(host, port) then
     return true
+  else
+    return false
   end
-return false
 end
 
 function Handshake()
   tcp:settimeout(0)
   tcp:send(json.encode({TYPE = 'HANDSHAKE'}))
-  local counter = 0;
   tmr_initial_handshake = timer.performWithDelay( 200, function()
-print("inhand")
-      if message ~= '' and message ~= nil then
-      if handshake_json.RES == "OK" and handshake_json.TYPE == "HANDSHAKE" then
-        print("CONNECTED")
-        _G.remoteAddress_TCP = handshake_json.IPADDRESS
-        timer.cancel( tmr_initial_handshake )
-      end
+      local x,y,message = tcp:receive()
+      if (json.decode(message)) then
+        local jsn = json.decode(message)
+        if jsn.RES == "OK" and jsn.TYPE == "HANDSHAKE" then
+          print("CONNECTED")
+          _G.remoteAddress_TCP = jsn.IPADDRESS
+          timer.cancel( tmr_initial_handshake )
+        end
     end
   end,0)
 
 end
-
-co = coroutine.create(function ()
-
-    tcp:settimeout(0)
-    tcp:send(json.encode({TYPE = "KEEPALIVE"}))
-
-          if (json_receive.TYPE == "KEEPALIVE") and (json_receive.RES == "OK")then
-            print("KAP RETURNED")
-          else
-            print("KAP TRANSMISSION ERROR")  --TODO: Add listener for this and interrupt game
-          end
-end)
 
 function close_connection()
 tcp:close()
@@ -73,16 +58,13 @@ function utility.choose_team()
   tcp:send(json.encode({TYPE = "CREATE_TEAM", NAME = _G.team_name, USERNAME = _G.username}))
 
   tmr_team = timer.performWithDelay( 200, function()
-
     local x,y,message = tcp:receive()
-    if message ~= '' and message ~= nil then
-      local json_receive = json.decode(message)
-      if json_receive.TYPE == "CREATE_TEAM" and json_receive.RES == "OK" then
-        _G.is_host = json_receive.ISHOST
+    if (json.decode(message)) then
+      local jsn = json.decode(message)
+      if jsn.TYPE == "CREATE_TEAM" and jsn.RES == "OK" then
+        _G.is_host = jsn.ISHOST
         print("RECEIVED TEAM JSON")
-
         timer.cancel(tmr_team)
-
         coroutine.resume(hide_screen_choose_team)
 
       end
@@ -98,9 +80,9 @@ function utility.leave_room()
 
   tmr_receive_team_confirm = timer.performWithDelay( 200, function()
     local x,y,message = tcp:receive()
-    if message ~= '' and message ~= nil then
-      local json_receive = json.decode(message)
-      if json_receive.TYPE == "LEAVE_ROOM" and json_receive.RES == "OK" then
+    if json.decode(message) then
+      local jsn = json.decode(message)
+      if jsn.TYPE == "LEAVE_ROOM" and jsn.RES == "OK" then
         timer.cancel(tmr_receive_team_confirm)
         coroutine.resume(hide_screen_team_room)
         close_connection()
@@ -109,6 +91,5 @@ function utility.leave_room()
   end,0)
 
 end
-
 
 return utility

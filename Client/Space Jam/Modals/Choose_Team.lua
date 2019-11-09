@@ -12,7 +12,7 @@ function scene:create(event)
   modal_background:setStrokeColor(255,255,255)
 
 
-  local lbl_team_name = display.newText("T e a m   N a m e :",display.contentCenterX,display.contentCenterY-200,"fonts/delirium.ttf",60 )
+  local lbl_team_name = display.newText("T  e  a  m     N  a  m  e  :",display.contentCenterX,display.contentCenterY-200,"fonts/delirium.ttf",60 )
   lbl_team_name:setFillColor(255,255,255)
 
   txt_team = native.newTextField( display.contentCenterX, display.contentCenterY-130, 500, 80, onTeam )
@@ -23,7 +23,7 @@ function scene:create(event)
   txt_team.strokeWidth = 8
   txt_team:addEventListener("userInput", onEditing)
 
-  local lbl_username = display.newText("U S E R N A M E:",display.contentCenterX,display.contentCenterY-30,"fonts/delirium.ttf",60 )
+  local lbl_username = display.newText("U  S  E  R  N  A  M  E:",display.contentCenterX,display.contentCenterY-30,"fonts/delirium.ttf",60 )
   lbl_team_name:setFillColor(255,255,255)
 
   txt_username = native.newTextField( display.contentCenterX, display.contentCenterY+40, 500, 80, onTeam )
@@ -118,8 +118,9 @@ function onEditing( event )
     local ptxt = txt_team.text
 		  ptxt = string.gsub(ptxt, "[^%w%s]", "")
 		   if string.len(ptxt) > 12 then
-      ptxt = string.sub(ptxt,0,12)
+         ptxt = string.sub(ptxt,0,12)
         end
+      ptxt = string.gsub(ptxt, " ", "")
 		txt_team.text = ptxt
 
     local ptxt = txt_username.text
@@ -127,6 +128,7 @@ function onEditing( event )
 		   if string.len(ptxt) > 12 then
       ptxt = string.sub(ptxt,0,12)
         end
+      ptxt = string.gsub( ptxt, " ", "")
 		txt_username.text = ptxt
   end
 
