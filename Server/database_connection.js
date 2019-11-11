@@ -282,7 +282,6 @@ function delete_team(team_id,player_id,remoteAddress){
 								}});
 							});}
 						else if(ishost == 0){			//If exiting player is NOT host
-							console.log("TRIGGERED IS NOT HOSt");
 							get_team_ID(player_id).then(function(team_id){	//Retrieve Team ID
 								delete_player_from_team(team_id,player_ID_global,remoteAddress).then(function(val){
 									if (val) {resolve ("OK")}

@@ -1,4 +1,5 @@
 var db = require('./database_connection.js');
+var teams = require('./teams.js')
 var dgram = require('dgram');
 var server = dgram.createSocket('udp4');
 
@@ -20,10 +21,8 @@ try{
       	var addr = String(String(rinfo.address) + ":" + String(rinfo.port));
       	db.initiate_udp(decoded_json.TCPADDRESS,addr).then(function(){
 				send(JSON.stringify({TYPE : "INITIATE", RES : "OK"}),rinfo.address,rinfo.port);
-
-		
+				teams.team_doing();
 				});
-
 
     	break;
 
@@ -47,7 +46,7 @@ server.bind(55000);
 function send(msg,address,port){
 
 	server.send(msg, port, address);
-	console.log("Sent!")
+
 
 }
 
