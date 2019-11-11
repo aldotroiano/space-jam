@@ -21,11 +21,7 @@ try{
       	db.initiate_udp(decoded_json.TCPADDRESS,addr).then(function(){
 				send(JSON.stringify({TYPE : "INITIATE", RES : "OK"}),rinfo.address,rinfo.port);
 
-				players[sock.id] ={
-						
-
-
-				}
+		
 				});
 
 
