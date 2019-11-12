@@ -3,7 +3,7 @@ var player = {};
 
 
 function create_object(player_id,team_id,is_host,username,tcp,udp){
-
+console.log("ADDED PLAYER to object");
 player = {
 	"Tid" : team_id,
 	"Pid" : player_id,
