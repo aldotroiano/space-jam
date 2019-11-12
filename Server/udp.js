@@ -19,9 +19,9 @@ try{
 
       	console.log('Received INITIATE UDP from: %s : %s', rinfo.address,rinfo.port);
       	var addr = String(String(rinfo.address) + ":" + String(rinfo.port));
-      	db.initiate_udp(decoded_json.TCPADDRESS,addr).then(function(){
+      	db.initiate_udp(decoded_json.TCPADDRESS,addr).then(function([player_id,team_id,is_host,username]){
 				send(JSON.stringify({TYPE : "INITIATE", RES : "OK"}),rinfo.address,rinfo.port);
-				teams.team_doing();
+				teams.create_object(player_id,team_id,is_host,username,decoded_json.TCPADDRESS,addr);
 				});
 
     	break;

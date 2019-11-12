@@ -23,7 +23,7 @@ var create_connection = function(){
 		console.error(err.message);
 	}
 });
-console.log("Added player to Table ONLINE_PLAYERS")
+//console.log("Added player to Table ONLINE_PLAYERS")
 
 }
 
@@ -36,7 +36,7 @@ console.log("Added player to Table ONLINE_PLAYERS")
 			console.error(err.message);
 		}
 	});
-	console.log("Deleted player from Table ONLINE_PLAYERS")
+//	console.log("Deleted player from Table ONLINE_PLAYERS")
 	}
 
 		function player_exists(remoteAddress){
@@ -107,10 +107,25 @@ function create_team(player_id,team_name,username){
 		return new Promise((resolve, reject) => {
 		db.get(SQLquery, (err,resp) => {
 		if(err) { reject(err); }
+
 		resolve(JSON.parse(resp.id))
 });
 });
 }
+
+	function get_username(pid){
+	
+	var SQLquery = "SELECT Name AS username FROM ONLINE_PLAYERS WHERE \"ID\" = " +  pid + ";";
+
+		return new Promise((resolve, reject) => {
+		db.get(SQLquery, (err,resp) => {
+		if(err) { reject(err); }
+
+		resolve(resp.username);
+});
+});
+}
+
 
 function is_host(player_id){
 	var SQLquery = "SELECT is_Host AS ishost FROM TEAM_PLAYER WHERE PLAYER_ID_FK = \"" + player_id + "\"";
@@ -228,7 +243,7 @@ function delete_team(team_id,player_id,remoteAddress){
 	Player_in_team(team_name).then(function(team_exists){
 	if(team_exists == 1){
 		add_to_team(player_id,team_name,username).then(function(){
-		console.log("ADDED TO TEAM");
+		//console.log("ADDED TO TEAM");
 		is_host(player_id).then(function(ishost){
 		resolve(ishost);
 });
@@ -236,7 +251,7 @@ function delete_team(team_id,player_id,remoteAddress){
 	}
 	else if(team_exists == 0){
 		create_team(player_id,team_name,username).then(function(){
-		console.log("TEAM CREATED");
+		//console.log("TEAM CREATED");
 		is_host(player_id).then(function(ishost){
 		resolve(ishost);
 		});
@@ -265,7 +280,6 @@ function delete_team(team_id,player_id,remoteAddress){
 							if(ishost == 1){					//Check whether exiting Player is Room host
 								get_team_ID(player_id).then(function(team_id){	//Retrieve Team ID
 								team_ID_global = team_id;
-								console.log(team_id);
 								check_for_team_mates(team_id).then(function(resp){ 	//Retrieve 1 if NOT alone in team, 0 otherwise
 								if(resp == 1){				//Other people in the team
 									selecthost_and_leave(team_id, player_id, remoteAddress).then(function(val){
@@ -312,7 +326,15 @@ var SQL_update = ("UPDATE ONLINE_PLAYERS SET \"UDP ADDRESS\" = '" + String(udp_a
 		console.log(err.message);
 		reject();
 		}
-	resolve();
+	get_player_ID(tcp_address).then(function(player_id) { 	//Retreive player_id
+		get_username(player_id).then(function(username){
+			get_team_ID(player_id).then(function(team_id){	//Retrieve Team ID
+				is_host(player_id).then(function(is_host){				//Retrieve is_host value
+					resolve([player_id,team_id,is_host,username]);
+				});
+			});
+		});
+	});
 });
 });
 

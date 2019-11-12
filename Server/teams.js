@@ -1,15 +1,24 @@
+var players = [];
+var player = {};
 
-function team_doing(){
-var teams = [];
-var player = {
 
-	"name": "ALDO",
-	"id": 3,
+function create_object(player_id,team_id,is_host,username,tcp,udp){
 
-};
-teams.push(player);
-console.log(teams);
-console.log(teams.player);
+player = {
+	"Tid" : team_id,
+	"Pid" : player_id,
+	"usr" : username,
+	"host" : is_host,
+	"tcp" : tcp,
+	"udp" : udp,
+	"ingame" : false,
+}
+players.push(player);
+console.log(players);
 }
 
-module.exports = {team_doing};
+function delete_object(tcpa){
+players.splice(players.findIndex(x => x.tcp === tcpa),1);
+}
+
+module.exports = {create_object,delete_object};
