@@ -45,13 +45,6 @@ function Handshake()
 
 end
 
-function close_connection()
-tcp:close()
-print("DISCONNECTED")
-end
-
-
-
 function utility.choose_team()
 
   tcp:settimeout(0)
@@ -90,6 +83,12 @@ function utility.leave_room()
     end
   end,0)
 
+end
+
+
+function close_connection()
+tcp:close()
+print("DISCONNECTED")
 end
 
 return utility
