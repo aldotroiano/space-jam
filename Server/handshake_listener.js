@@ -25,7 +25,7 @@ function onClientConnected(sock) {
 
   sock.on('data', function(data) {
 
-try{
+	try{
 	decoded_json = JSON.parse(data);
 
 	switch (decoded_json.TYPE){
