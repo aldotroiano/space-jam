@@ -15,8 +15,15 @@ function receive()
 timer.performWithDelay( 50, function()
 
   data = udp:receive()
+
   if data then
-      print("Received: ", data)
+
+    if (json.decode(data)) then
+      local jsn = json.decode(data)
+        print("Received: ", data)
+        
+
+    end
   end
 
 end,0)
