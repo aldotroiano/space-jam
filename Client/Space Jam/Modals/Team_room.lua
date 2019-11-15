@@ -1,6 +1,6 @@
 local composer = require('composer')
 local utility_TCP = require("Networking.TCP")
-local utility_UDP = require("Networking.UDP")
+--local utility_UDP = require("Networking.UDP")
 local scene = composer.newScene()
 
 
@@ -17,13 +17,13 @@ leave_pressed = false
   modal_background.strokeWidth = 8
   modal_background:setStrokeColor(255,255,255)
 
-  local lbl_team_name = display.newText("TEAM : ".._G.team_name,65,display.contentCenterY-260,"fonts/FallingSky.otf",42 )
+  local lbl_team_name = display.newText("LOBBY: ".._G.team_name,65,display.contentCenterY-260,"fonts/FallingSky.otf",42 )
   lbl_team_name.anchorX = 0
   lbl_team_name:setFillColor(255,255,255)
 
-  if (_G.is_host == 1) then
+  --[[if (_G.is_host == 1) then
     lbl_team_name.text = lbl_team_name.text.." (HOST)"
-  end
+  end--]]
 
   local bx_leave_room = display.newRect(60, display.contentCenterY+210,220,100)
   bx_leave_room.anchorX = 0
@@ -48,13 +48,19 @@ leave_pressed = false
   lbl_start:setFillColor(255,255,255)
 
 
+  lbl_players = display.newText("Loading Team...",65,display.contentCenterY-200,"fonts/FallingSky.otf",42  )
+  lbl_players.anchorX = 0
+  lbl_players.anchorY = 0
+  lbl_players:setFillColor(255,255,255)
+
+
   Team_room_view:insert(modal_background)
   Team_room_view:insert(lbl_team_name)
   Team_room_view:insert(bx_leave_room)
   Team_room_view:insert(bx_start)
   Team_room_view:insert(lbl_leave_room)
   Team_room_view:insert(lbl_start)
-
+  Team_room_view:insert(lbl_players)
   --Team_room_view:toFront()
 end
 
@@ -74,13 +80,44 @@ composer.hideOverlay("slideRight", 200)
 coroutine.yield()
 end)
 
+tmr_shw_plys = timer.performWithDelay(2000, function()
+
+  lbl_players.text = ""
+  if(_G.tbl_roomplyrs ~= nil) then       --REFRESH PLAYERS IN LBL lbl_players
+    local counter = 0
+    for k,v in pairs(_G.tbl_roomplyrs) do
+      print("INMAIN")
+
+      if(k == "NAME"..counter) then
+        print("in name if")
+        lbl_players.text = lbl_players.text..(counter+1)..") "..v.."\n"
+        counter = counter + 1
+        elseif (k == "HOST"..counter) then
+        --[[  print("in host if")
+        if(v == 1) then
+          print("host YES")
+          lbl_players.text = lbl_players.text.."  (HOST)".."\n"
+          counter = counter + 1
+        else
+          print("host NO")
+          lbl_players.text = lbl_players.text.."\n"
+          counter = counter + 1
+        end
+        print("counter : "..counter)
+--]]
+      end
+  end
+end
+return true
+end,0)
+
 function scene:show( event )
 	local sceneGroup = self.view
 	local phase = event.phase
 
 	if phase == "will" then
 
-		utility_UDP.startUDP()
+
 	elseif phase == "did" then
 		-- Called when the scene is now on screen
 		--

@@ -59,7 +59,7 @@ function utility.choose_team()
         print("RECEIVED TEAM JSON")
         timer.cancel(tmr_team)
         coroutine.resume(hide_screen_choose_team)
-
+        udp.startUDP()
       end
     end
   end,0)

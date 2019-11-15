@@ -1,5 +1,6 @@
 local json = require "json"
 local socket = require("socket")
+--local lobby = require("Modals.Team_room")
 local utility = {}
 udp = socket.udp()
 udp:setpeername("3.10.140.235", 55000)
@@ -12,20 +13,28 @@ function utility.startUDP()
 end
 
 function receive()
-timer.performWithDelay( 50, function()
+timer.performWithDelay( 500, function()
 
   data = udp:receive()
 
   if data then
-
     if (json.decode(data)) then
       local jsn = json.decode(data)
         print("Received: ", data)
-        
+        if has_key(jsn,"NAME0") then
+          _G.tbl_roomplyrs = jsn
+          print("TABLE IS OF PLAYERS")
 
+        end
     end
   end
 
 end,0)
 end
+
+
+function has_key(table, key)
+    return table[key]~=nil
+end
+
 return utility
