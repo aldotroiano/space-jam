@@ -41,7 +41,7 @@ catch (error){
 server.on('listening', () => {
 	const address = server.address();
 	console.log('UDP server listening on port: %s',address.port);
-	setInterval(periodic_UDP,1000);
+	setInterval(periodic_UDP,2000);
 	});
 
 server.bind(55000);
@@ -58,12 +58,13 @@ player = {
 	"ingame" : false,
 }
 players.push(player);
-//console.log(players);
+console.log(players);
 periodic_UDP();
 }
 
 function delete_object(tcpa){
 players.splice(players.findIndex(x => x.tcp === tcpa),1);
+console.log(players.length);
 }
 
 function periodic_UDP(){
@@ -81,11 +82,11 @@ function periodic_UDP(){
 				tmp_ishost.push(players[b].host);
 			}
 		}
-		var jsn = "";
+		var jsn = "{";
 		for (var x = 0; x < tmp_nm.length; x++){
-		jsn += "{\"NAME\" : \""+ tmp_nm[x] + "\", \"HOST\" : "+ tmp_ishost[x] +"},";
+		jsn += "\"NAME"+x+"\" : \""+ tmp_nm[x] + "\", \"HOST"+x+"\" : "+ tmp_ishost[x] +",";
 		}
-		send(jsn,addr_s[0],addr_s[1]);
+		send(JSON.stringify(jsn+"}"),addr_s[0],addr_s[1]);
 	}
 }
 
