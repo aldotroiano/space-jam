@@ -86,7 +86,7 @@ function periodic_UDP(){
 		for (var x = 0; x < tmp_nm.length; x++){
 		jsn += "\"NAME"+x+"\" : \""+ tmp_nm[x] + "\", \"HOST"+x+"\" : "+ tmp_ishost[x] +",";
 		}
-		send(JSON.stringify(jsn+"}"),addr_s[0],addr_s[1]);
+		send(jsn+"}",addr_s[0],addr_s[1]);
 	}
 }
 
