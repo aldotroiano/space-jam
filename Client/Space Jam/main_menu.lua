@@ -11,6 +11,7 @@ local widget = require "widget"
 local animation = require("plugin.animation")
 require("Networking.TCP")
 require("Networking.ping")
+--local utility_UDP = require("Networking.UDP")
 local animation_triggered = false
 
 -- TODO : Check connection on Click on multiplayer  OK
@@ -149,6 +150,7 @@ end
 
 function scene:init_team_game()
 timer.performWithDelay(200, function() composer.showOverlay("Modals.Team_room", {isModal = true, effect = "fromRight", time = 200} )end)
+--utility_UDP.startUDP()
 return true
 end
 
