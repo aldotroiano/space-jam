@@ -150,7 +150,7 @@ end
 
 function scene:init_team_game()
 timer.performWithDelay(200, function() composer.showOverlay("Modals.Team_room", {isModal = true, effect = "fromRight", time = 200} )end)
---utility_UDP.startUDP()
+
 return true
 end
 

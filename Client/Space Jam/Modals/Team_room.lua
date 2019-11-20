@@ -93,6 +93,9 @@ tmr_shw_plys = timer.performWithDelay(2000, function()
         lbl_players.text = lbl_players.text..(counter+1)..") "..v.."\n"
         counter = counter + 1
         elseif (k == "HOST"..counter) then
+
+          --TODO: FIX host not showing correctly and changing layout of text message
+
         --[[  print("in host if")
         if(v == 1) then
           print("host YES")
