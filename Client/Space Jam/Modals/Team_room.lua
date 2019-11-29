@@ -85,7 +85,7 @@ tmr_shw_plys = timer.performWithDelay(800, function()
 
   lbl_players.text = ""
   lbl_hosts.text = ""
-  if(_G.tbl_roomplyrs ~= nil) then       --REFRESH PLAYERS IN LBL lbl_players
+  if(_G.tbl_roomplyrs ~= nil) then       --TODO: fix players not showing correctly after < 2 players.  URGENT
     local counter = 0
     for k,v in pairs(_G.tbl_roomplyrs) do
       if(k == "NAME"..counter) then

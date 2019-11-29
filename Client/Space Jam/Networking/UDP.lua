@@ -20,7 +20,7 @@ timer.performWithDelay( 500, function()
   if data then
     if (json.decode(data)) then
       local jsn = json.decode(data)
-      print("received",data)
+      --print("received",data)
         if has_key(jsn,"NAME0") then
           _G.tbl_roomplyrs = jsn
         end
