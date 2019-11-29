@@ -41,7 +41,7 @@ catch (error){
 server.on('listening', () => {
 	const address = server.address();
 	console.log('UDP server listening on port: %s',address.port);
-	setInterval(periodic_UDP,2000);
+	setInterval(periodic_UDP,800);
 	});
 
 server.bind(55000);
@@ -58,7 +58,7 @@ player = {
 	"ingame" : false,
 }
 players.push(player);
-console.log(players);
+//console.log(players);
 periodic_UDP();
 }
 
