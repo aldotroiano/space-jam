@@ -289,7 +289,7 @@ function delete_team(team_id,player_id,remoteAddress){
 								}
 								else if(resp == 0){			//Leaving team with only one occupier, should delete team
 									delete_team(team_id,player_id,remoteAddress).then(function(val){
-										console.log("ROMISE THAT DELETES TEAM");
+										console.log("PROMISE THAT DELETES TEAM");
 										if (val) { resolve ("OK") }
 										else { reject(0) }
 									});
