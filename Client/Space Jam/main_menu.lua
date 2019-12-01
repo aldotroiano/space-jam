@@ -11,7 +11,6 @@ local widget = require "widget"
 local animation = require("plugin.animation")
 require("Networking.TCP")
 require("Networking.ping")
---local utility_UDP = require("Networking.UDP")
 local animation_triggered = false
 
 -- TODO : Check connection on Click on multiplayer  OK
@@ -156,6 +155,7 @@ end
 
 function scene:back_from_room()
 sceneGroup:toFront()
+close_conn()
 native.showAlert( "ALERT", "You Left Team: \n".._G.team_name.." " ,{ "OK" })
 return true
 end

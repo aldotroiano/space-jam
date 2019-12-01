@@ -67,8 +67,7 @@ end
 
 
 
-function utility.leave_room()
-  tcp:settimeout(0)
+function close_conn()
   --tcp:send(json.encode({TYPE = "LEAVE_ROOM", NAME = _G.team_name}))
 --[[
   tmr_receive_team_confirm = timer.performWithDelay( 200, function()
@@ -84,7 +83,7 @@ function utility.leave_room()
   end,0)
 --]]
 tcp:close()
-coroutine.resume(hide_screen_team_room)
+
 end
 
 

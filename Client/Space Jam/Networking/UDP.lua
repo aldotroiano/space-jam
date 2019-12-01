@@ -1,6 +1,6 @@
 local json = require "json"
 local socket = require("socket")
---local lobby = require("Modals.Team_room")
+require("Modals.Team_room")
 local utility = {}
 udp = socket.udp()
 udp:setpeername("3.10.140.235", 55000)
@@ -20,9 +20,9 @@ timer.performWithDelay( 500, function()
   if data then
     if (json.decode(data)) then
       local jsn = json.decode(data)
-      --print("received",data)
-        if has_key(jsn,"NAME0") then
-          _G.tbl_roomplyrs = jsn
+      print("received",data)
+        if has_key(jsn,"HOST0") then
+          update_room(jsn)
         end
     end
   end

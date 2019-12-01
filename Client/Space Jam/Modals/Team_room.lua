@@ -1,9 +1,6 @@
 local composer = require('composer')
-local utility_TCP = require("Networking.TCP")
---local utility_UDP = require("Networking.UDP")
+tablex = require("Libraries.tablex")
 local scene = composer.newScene()
-
-
 local leave_pressed = false
 local max_players = 4
 array_players = {}
@@ -67,7 +64,7 @@ end
 
 function leave_onPressed ()
 leave_pressed = true
-utility_TCP.leave_room()
+composer.hideOverlay("slideRight", 200)
 lbl_leave_room.text = "L E A V I N G"
 end
 
@@ -76,33 +73,27 @@ function start_onPressed ()
 print("START")
 end
 
-hide_screen_team_room = coroutine.create(function ()
-composer.hideOverlay("slideRight", 200)
-coroutine.yield()
-end)
-
-tmr_shw_plys = timer.performWithDelay(800, function()
-
+function update_room(json_players)
   lbl_players.text = ""
   lbl_hosts.text = ""
-  if(_G.tbl_roomplyrs ~= nil) then       --TODO: fix players not showing correctly after < 2 players.  URGENT
+  if(json_players ~= nil) then       
     local counter = 0
-    for k,v in pairs(_G.tbl_roomplyrs) do
-      if(k == "NAME"..counter) then
-        lbl_players.text = lbl_players.text..(counter+1)..") "..v.."\n"
+    while(counter < tablex.size(json_players)/2) do
+      print("going through loop")
+      if(json_players["NAME"..counter] ~= nil) then
+        lbl_players.text = lbl_players.text..(counter+1)..") "..json_players["NAME"..counter].."\n"
       end
-        if (k == "HOST"..counter) then
-          if(v == 1) then
-            lbl_hosts.text = lbl_hosts.text.."HOST".."\n"
-          elseif(v == 0) then
-            lbl_hosts.text = lbl_hosts.text.."-".."\n"
-          end
-          counter = counter + 1
+      if(json_players["HOST"..counter] ~= nil) then
+        if(json_players["HOST"..counter] == 1) then
+          lbl_hosts.text = lbl_hosts.text.."HOST".."\n"
+        else
+          lbl_hosts.text = lbl_hosts.text.."-".."\n"
         end
+        counter = counter + 1
+      end
+    end
   end
 end
-return true
-end,0)
 
 function scene:show( event )
 	local sceneGroup = self.view
@@ -131,7 +122,6 @@ function scene:hide( event )
         if(leave_pressed) then
           leave_pressed = false
           parent:back_from_room()
-
         end
 
       -- Called when the scene is now off screen
