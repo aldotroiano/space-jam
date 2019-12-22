@@ -76,10 +76,9 @@ end
 function update_room(json_players)
   lbl_players.text = ""
   lbl_hosts.text = ""
-  if(json_players ~= nil) then       
+  if(json_players ~= nil) then
     local counter = 0
     while(counter < tablex.size(json_players)/2) do
-      print("going through loop")
       if(json_players["NAME"..counter] ~= nil) then
         lbl_players.text = lbl_players.text..(counter+1)..") "..json_players["NAME"..counter].."\n"
       end

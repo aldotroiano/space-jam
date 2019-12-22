@@ -2,7 +2,7 @@ local json = require "json"
 local socket = require("socket")
 local udp = require("Networking.UDP")
 local utility = {}
-local host, port = "3.10.140.235", 41555
+local host, port = "3.8.48.250", 41555
 local tcp = nil
 
 function handshake_management()

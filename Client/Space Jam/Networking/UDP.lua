@@ -3,7 +3,7 @@ local socket = require("socket")
 require("Modals.Team_room")
 local utility = {}
 udp = socket.udp()
-udp:setpeername("3.10.140.235", 55000)
+udp:setpeername("3.8.48.250", 55000)
 udp:settimeout(0)
 
 function utility.startUDP()
@@ -20,7 +20,7 @@ timer.performWithDelay( 500, function()
   if data then
     if (json.decode(data)) then
       local jsn = json.decode(data)
-      print("received",data)
+    --  print("received",data)
         if has_key(jsn,"HOST0") then
           update_room(jsn)
         end
