@@ -25,7 +25,6 @@ try{
 				send(JSON.stringify({TYPE : "INITIATE", RES : "OK"}),rinfo.address,rinfo.port);
 				create_object(player_id,team_id,is_host,username,decoded_json.TCPADDRESS,addr);
 				});
-
     	break;
 
 		default:
@@ -41,7 +40,7 @@ catch (error){
 server.on('listening', () => {
 	const address = server.address();
 	console.log('UDP server listening on port: %s',address.port);
-	setInterval(periodic_UDP,800);
+	setInterval(periodic_UDP,500);
 	});
 
 server.bind(55000);
@@ -58,14 +57,40 @@ player = {
 	"ingame" : false,
 }
 players.push(player);
-//console.log(players);
+console.log(players);
 periodic_UDP();
 }
 
-function delete_object(tcpa){
-players.splice(players.findIndex(x => x.tcp === tcpa),1);
+function deletion_manager(tcpa){
+
+var index_player;
+
+for (var x = 0; x < players.length; x++){
+	if(players[x].tcp == tcpa){
+		
+		if(players[x].host == 1){
+		change_host(tcpa,players[x].Tid);
+		
+		}
+		players.splice(x,1);
+		console.log("DELETED HOST FROM ARRAY");
+	}
+}
+
 console.log(players.length);
 }
+
+function change_host(tcpa_old,team_id){
+
+	for (var i = 0; i < players.length; i++){
+
+		if(players[i].tcp != tcpa_old && players[i].Tid == team_id){
+			players[i].host = 1;
+			break;
+		}
+	}
+}
+
 
 function periodic_UDP(){
 
@@ -95,4 +120,4 @@ function send(msg,address,port){
 }
 
 
-module.exports = {send,delete_object};
+module.exports = {send,deletion_manager};

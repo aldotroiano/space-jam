@@ -53,7 +53,7 @@ function onClientConnected(sock) {
 		sock.write(JSON.stringify({TYPE : "LEAVE_ROOM", RES : "OK"}));
 		console.log("PLAYER LEFT ROOM");
 		counter -= 1;
-		teams.delete_object(remoteAddress);
+		teams.deletion_manager(remoteAddress);
 		});
 		break;
 
@@ -77,7 +77,7 @@ console.log(error);
     		counter = counter - 1;
     		console.log('connection from %s closed', remoteAddress);
   			console.log('Connected clients: %i', counter);
-  			teams.delete_object(remoteAddress);
+  			teams.deletion_manager(remoteAddress);
 				});
 			}
 			else{
