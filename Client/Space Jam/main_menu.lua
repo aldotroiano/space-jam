@@ -163,7 +163,7 @@ end
 function scene:starting_game()
 	print("Went back to parent")
 	sceneGroup:toBack()
-	timer.performWithDelay( 500, function() composer.showOverlay( "game_engine", {isModal = false, effect = "fromRight", time = 350})end )
+	timer.performWithDelay( 200, function() composer.showOverlay( "game_engine", {effect = "fade", time = 200})end )
 	sceneGroup:toBack()
 	return true
 end

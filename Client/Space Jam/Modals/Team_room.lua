@@ -26,7 +26,7 @@ leave_pressed = false
   bx_leave_room:setStrokeColor(255,255,255)
   bx_leave_room:addEventListener( "tap" , leave_onPressed)
 
-  local bx_start = display.newRect(display.actualContentWidth-60, display.contentCenterY+210,220,100)
+  bx_start = display.newRect(display.actualContentWidth-60, display.contentCenterY+210,220,100)
   bx_start.anchorX = 1
   bx_start:setFillColor(0,51,0,0.3)
   bx_start.strokeWidth = 8
@@ -37,8 +37,8 @@ leave_pressed = false
   lbl_leave_room.anchorX = 0.5
   lbl_leave_room:setFillColor(255,255,255)
 
-  lbl_start = display.newText("S T A R T",display.actualContentWidth-105,display.contentCenterY+210,"fonts/delirium.ttf",75 )
-  lbl_start.anchorX = 1
+  lbl_start = display.newText("S T A R T",display.actualContentWidth-165,display.contentCenterY+210,"fonts/delirium.ttf",75 )
+  lbl_start.anchorX = 0.5
   lbl_start:setFillColor(255,255,255)
 
   lbl_players = display.newText("Loading Team...",65,display.contentCenterY-200,"fonts/FallingSky.otf",42  )
@@ -90,8 +90,15 @@ function update_room(json_players)
       if(json_players["HOST"..counter] ~= nil) then
         if(json_players["HOST"..counter] == 1) then
           lbl_hosts.text = lbl_hosts.text.."HOST".."\n"
+          if(json_players["NAME"..counter] == _G.username) then
+            _G.is_host = 1
+            lbl_start.alpha , bx_start.alpha = 1,1
+          else
+            _G.is_host = 0
+            lbl_start.alpha , bx_start.alpha = 0.4,0.4
+          end
         else
-          lbl_hosts.text = lbl_hosts.text.."-".."\n"
+          lbl_hosts.text = lbl_hosts.text.."---".."\n"
         end
         counter = counter + 1
       end
