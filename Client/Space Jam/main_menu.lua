@@ -160,6 +160,14 @@ native.showAlert( "ALERT", "You Left Team: \n".._G.team_name.." " ,{ "OK" })
 return true
 end
 
+function scene:starting_game()
+	print("Went back to parent")
+	sceneGroup:toBack()
+	timer.performWithDelay( 500, function() composer.showOverlay( "game_engine", {isModal = false, effect = "fromRight", time = 350})end )
+	sceneGroup:toBack()
+	return true
+end
+
 function scene:show( event )
 	local sceneGroup = self.view
 	local phase = event.phase

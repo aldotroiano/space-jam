@@ -2,6 +2,7 @@ local composer = require('composer')
 tablex = require("Libraries.tablex")
 local scene = composer.newScene()
 local leave_pressed = false
+local start_pressed = false
 local max_players = 4
 array_players = {}
 
@@ -36,10 +37,9 @@ leave_pressed = false
   lbl_leave_room.anchorX = 0.5
   lbl_leave_room:setFillColor(255,255,255)
 
-  local lbl_start = display.newText("S T A R T",display.actualContentWidth-105,display.contentCenterY+210,"fonts/delirium.ttf",75 )
+  lbl_start = display.newText("S T A R T",display.actualContentWidth-105,display.contentCenterY+210,"fonts/delirium.ttf",75 )
   lbl_start.anchorX = 1
   lbl_start:setFillColor(255,255,255)
-
 
   lbl_players = display.newText("Loading Team...",65,display.contentCenterY-200,"fonts/FallingSky.otf",42  )
   lbl_players.anchorX = 0
@@ -69,8 +69,13 @@ lbl_leave_room.text = "L E A V I N G"
 end
 
 
-function start_onPressed ()
+function start_onPressed()
 print("START")
+if _G.is_host == 1 then
+  start_pressed = true
+  composer.hideOverlay("slideLeft", 200)
+  lbl_start.text = "S T A R T I N G"
+end
 end
 
 function update_room(json_players)
@@ -121,6 +126,10 @@ function scene:hide( event )
         if(leave_pressed) then
           leave_pressed = false
           parent:back_from_room()
+        end
+        if(start_pressed) then
+          start_pressed = false
+          parent:starting_game()
         end
 
       -- Called when the scene is now off screen

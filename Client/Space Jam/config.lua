@@ -5,6 +5,6 @@ application =
 		width = 683,
     height = 1024,
     scale = "letterbox",
-		fps = 60
+		fps = 45
 	},
 }

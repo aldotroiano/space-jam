@@ -14,30 +14,34 @@ local num_players = 3
 
 
 function scene:create( event )
-	local sceneGroup = self.view
+	game_group = self.view
+
+	physics.start()
+	physics.stop()
 
 	camera = perspective.createView()
 
 	world = display.newGroup()
 
-	--terrain[1] = terrains.new(world,display.contentCenterY)
-	--camera:add(terrain[1],2)
 	for _ = 1,100 do spawnTerrain() end
 	print("Spawning terrain blocks")
 
 	for i = 1, num_players do spawnPlayers(i) end
 	print("Spawning players")
 
-	local background = display.newRect( display.screenOriginX, display.screenOriginY, screenW, screenH )
+	background = display.newRect( display.screenOriginX, display.screenOriginY, screenW, screenH )
 	background.anchorX = 0
 	background.anchorY = 0
 	background:setFillColor(0,0,0)
 	background.strokeWidth = 15
 
-	--[[local options_bar = display.newRect(display.screenOriginX,display.screenOriginY,screenW,50)
+	local options_bar = display.newRect(display.screenOriginX,display.screenOriginY,screenW,50)
 	options_bar.anchorX = 0
 	options_bar.anchorY = 0
-	options_bar:setFillColor(0.5,0,0)--]]
+	options_bar:setFillColor(0.5,0,0)
+
+	y_val = display.newText("Y VAL", display.screenOriginX + 10,display.screenOriginY +15 )
+	y_val.anchorX, y_val.anchorY = 0,0
 
 --[[
 	spaceship = display.newImageRect( "Assets/rocket.png", 140, 280 )
@@ -56,20 +60,21 @@ local sheet_firespace = graphics.newImageSheet( "Assets/spaceship.png", {width=4
 
 spaceship = display.newSprite( sheet_firespace, {start=1, count=8, time=400, loopCount=0,loopDirection="forward"} )
 spaceship.x, spaceship.y = display.contentCenterX, (display.actualContentHeight/5)*4
-spaceship:scale(0.25, 0.25)
+spaceship:scale(0.18, 0.18)
 spaceship:play()
-physics.addBody( spaceship, { density=2.0, friction=0.3, bounce=0.3,isSensor = true } )
+physics.addBody( spaceship, { density=2.0, friction=0.3, bounce=0.3} )
 
-camera:add(spaceship,1)
-	sceneGroup:insert( background )
-	sceneGroup:insert(world)
-	--sceneGroup:insert(options_bar)
+	game_group:insert(background)
+	options_bar:toFront()
+	game_group:insert(spaceship)
+
   --sceneGroup:insert( spaceship )
 	--camera:setBounds(false,false,display.actualContentHeight,display.contentCenterY)
-
+camera:add(spaceship,1)
 camera.damping = 10
 camera:setFocus(spaceship)
 camera:track()
+
 
 end
 
@@ -77,31 +82,25 @@ function spawnTerrain()
 	terrain[#terrain+1] = terrains.new(world, display.contentCenterY - (terrain_count*500))
 	terrain[#terrain]:toBack()
 	terrain_count = terrain_count + 1
-	camera:add(terrain[#terrain],2)
+	camera:add(terrain[#terrain],3)
 end
 
 function spawnPlayers(i)
 	players[#players+1] = opponents.new(world,(display.actualContentWidth/5)*i,display.actualContentHeight - 150)
-	players[#players]:toBack()
+	players[#players]:toFront()
 	--physics.addBody( players[#players], "dynamic")
-end
-
-function moveShip(event)
-
-return true
 end
 
 local function onFrames(event)
 --local sx, sy = spaceship:localToContent(0,0)
---spaceship.y = spaceship.y - 5
 --world.y = world.y + 2*1.5  -- TODO ADD SPEED TO PLAYER THRIOGUH SPEED VAR
 spaceship:translate(0,-5)
---spaceship.y = spaceship.y - 5
+y_val.text = math.floor(spaceship.y)
 --world.y = -(sy)+display.actualContentHeight
 -- physics to move ship and loc of ship to be ion contentCenterX
 end
 
-local function onTouchMain(event)
+local function Moveship(event)
 	if(event.x > 60 and event.x < display.actualContentWidth - 60) then
 		spaceship.x =  event.x
 	end
@@ -109,23 +108,24 @@ end
 
 
 function scene:show( event )
-	local sceneGroup = self.view
+	local game_group = self.view
 	local phase = event.phase
 
 	if phase == "will" then
+		background:addEventListener("touch",Moveship)
 		Runtime:addEventListener("enterFrame",onFrames)
-		Runtime:addEventListener("touch",onTouchMain)
+		
 
 
 	elseif phase == "did" then
-
-	--physics.start()
+composer.removeScene( "main_menu",false)
+print("Removing previous scene")
+	physics.start()
 	end
 end
 
 function scene:hide( event )
-	local sceneGroup = self.view
-
+	local game_group = self.view
 	local phase = event.phase
 
 	if event.phase == "will" then
@@ -133,14 +133,13 @@ function scene:hide( event )
 		physics.stop()
 	elseif phase == "did" then
 		Runtime:removeEventListener("enterFrame",onFrames)
+		Runtime:removeEventListener("touch",Moveship)
 	end
 
 end
 
 function scene:destroy( event )
-
-
-	local sceneGroup = self.view
+	local game_group = self.view
 
 	package.loaded[physics] = nil
 	physics = nil
