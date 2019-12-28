@@ -1,4 +1,5 @@
 var db = require('./database_connection.js');
+var matches = require('./matches.js');
 var teams = require('./teams.js');
 var start_listener = function(){
 
@@ -56,6 +57,12 @@ function onClientConnected(sock) {
 		teams.deletion_manager(remoteAddress);
 		});
 		break;
+		
+		case "START_MATCH":
+		sock.write(JSON.stringify({TYPE: "START_MATCH", RES : "OK"}))
+		matches.player_migration(remoteAddress);
+		console.log("HOST IS TRYING TO START MATCH")
+		
 
 	default:
 		break;

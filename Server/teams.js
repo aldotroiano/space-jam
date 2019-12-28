@@ -91,7 +91,21 @@ function change_host(tcpa_old,team_id){
 	}
 }
 
+function fetch_players(HOSTremoteAddress){
+var team_id;
+var match_players = [];
+players.forEach(player => { if(player.tcp == HOSTremoteAddress){team_id = player.Tid;}});
 
+players.forEach(player => {
+if(team_id == player.Tid){
+match_players.push(player);
+}
+});
+
+return match_players;
+//stopped at sending players back to migration function and from there follow to program sheet
+
+}
 function periodic_UDP(){
 
 	for (var a = 0; a < players.length; a++){
@@ -120,4 +134,4 @@ function send(msg,address,port){
 }
 
 
-module.exports = {send,deletion_manager};
+module.exports = {send,deletion_manager,fetch_players};
