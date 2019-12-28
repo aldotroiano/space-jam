@@ -9,14 +9,13 @@ udp:settimeout(0)
 function utility.startUDP()
   udp:send(json.encode({TYPE = 'INITIATE',TCPADDRESS = _G.remoteAddress_TCP}))
   print("UDP STARTED")
-  receive()
+  receive_room_participants()
 end
 
-function receive()
+function receive_room_participants()
+
 timer.performWithDelay( 500, function()
-
   data = udp:receive()
-
   if data then
     if (json.decode(data)) then
       local jsn = json.decode(data)
@@ -26,13 +25,17 @@ timer.performWithDelay( 500, function()
         end
     end
   end
-
 end,0)
+
 end
 
-
+function receive_game_stats()
+  
+end
 function has_key(table, key)
     return table[key]~=nil
 end
+
+
 
 return utility

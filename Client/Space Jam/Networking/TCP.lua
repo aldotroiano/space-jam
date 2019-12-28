@@ -65,6 +65,27 @@ function utility.choose_team()
   end,0)
 end
 
+function initial_game()
+
+  tcp:settimeout(0)
+  tcp:send(json.encode({TYPE = "START_MATCH"}))
+
+  tmr_start = timer.performWithDelay(200, function()
+    local x,y,message = tcp:receive()
+
+    if(json.decode(message)) then
+      local jsn = json.decode(message)
+      --local tbl = jsn.x_coord
+      --[[for k,v in pairs(tbl) do
+          print( k,v )
+        end--]]
+      if  jsn.TYPE == "START_MATCH" and jsn.RES == "OK" then
+        print("RECEIVING INFO FROM SERVER")
+      end
+    end
+  end,0)
+end
+
 function close_connection()
 tcp:close()
 print("DISCONNECTED")
