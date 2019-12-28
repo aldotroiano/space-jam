@@ -65,28 +65,6 @@ function utility.choose_team()
   end,0)
 end
 
-
-
-function close_conn()
-  --tcp:send(json.encode({TYPE = "LEAVE_ROOM", NAME = _G.team_name}))
---[[
-  tmr_receive_team_confirm = timer.performWithDelay( 200, function()
-    local x,y,message = tcp:receive()
-    if json.decode(message) then
-      local jsn = json.decode(message)
-      if jsn.TYPE == "LEAVE_ROOM" and jsn.RES == "OK" then
-        timer.cancel(tmr_receive_team_confirm)
-        coroutine.resume(hide_screen_team_room)
-        close_connection()
-      end
-    end
-  end,0)
---]]
-tcp:close()
-
-end
-
-
 function close_connection()
 tcp:close()
 print("DISCONNECTED")

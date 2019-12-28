@@ -155,7 +155,7 @@ end
 
 function scene:back_from_room()
 sceneGroup:toFront()
-close_conn()
+close_connection()
 native.showAlert( "ALERT", "You Left Team: \n".._G.team_name.." " ,{ "OK" })
 return true
 end
