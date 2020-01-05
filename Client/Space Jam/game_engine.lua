@@ -97,7 +97,7 @@ local function onFrames(event)
 spaceship:translate(0,-5)
 y_val.text = math.floor(spaceship.y)
 --world.y = -(sy)+display.actualContentHeight
--- physics to move ship and loc of ship to be ion contentCenterX
+-- physics to move ship and loc of ship to be in contentCenterX
 end
 
 local function Moveship(event)
@@ -114,7 +114,7 @@ function scene:show( event )
 	if phase == "will" then
 		background:addEventListener("touch",Moveship)
 		Runtime:addEventListener("enterFrame",onFrames)
-		
+
 
 
 	elseif phase == "did" then

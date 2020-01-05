@@ -30,7 +30,7 @@ end,0)
 end
 
 function receive_game_stats()
-  
+
 end
 function has_key(table, key)
     return table[key]~=nil
