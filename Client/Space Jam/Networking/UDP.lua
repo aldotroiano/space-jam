@@ -1,6 +1,7 @@
 local json = require "json"
 local socket = require("socket")
 require("Modals.Team_room")
+require("gameplay.game_manager")
 local utility = {}
 udp = socket.udp()
 udp:setpeername("3.8.48.250", 55000)
@@ -14,24 +15,21 @@ end
 
 function receive_room_participants()
 
-timer.performWithDelay( 500, function()
+timer.performWithDelay( 250, function()
   data = udp:receive()
   if data then
     if (json.decode(data)) then
       local jsn = json.decode(data)
-    --  print("received",data)
         if has_key(jsn,"HOST0") then
           update_room(jsn)
         end
+
     end
   end
 end,0)
 
 end
 
-function receive_game_stats()
-
-end
 function has_key(table, key)
     return table[key]~=nil
 end
