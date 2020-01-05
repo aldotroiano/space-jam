@@ -54,7 +54,6 @@ player = {
 	"host" : is_host,
 	"tcp" : tcp,
 	"udp" : udp,
-	"ingame" : false,
 }
 players.push(player);
 console.log(players);
@@ -91,21 +90,21 @@ function change_host(tcpa_old,team_id){
 	}
 }
 
-function fetch_players(HOSTremoteAddress){
-var team_id;
-var match_players = [];
-players.forEach(player => { if(player.tcp == HOSTremoteAddress){team_id = player.Tid;}});
+function fetch_players(HOSTremoteAddress){		//Migration process from Team to Match
+	var team_id;
+	var match_players = [];
+	players.forEach(player => { if(player.tcp == HOSTremoteAddress){team_id = player.Tid;}});
 
-players.forEach(player => {
-if(team_id == player.Tid){
-match_players.push(player);
-}
-});
+	players.forEach(player => {
+		if(team_id == player.Tid){
+			match_players.push(player);
+			// DELETE EACH PLAYER FROM THE TEAM ARRAY (SPLICE NEEDED AT THIS LINE) TODO
+		}
+	});
 
 return match_players;
-//stopped at sending players back to migration function and from there follow to program sheet
-
 }
+
 function periodic_UDP(){
 
 	for (var a = 0; a < players.length; a++){
