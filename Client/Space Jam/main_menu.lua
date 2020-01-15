@@ -10,6 +10,7 @@ local scene = composer.newScene()
 local widget = require "widget"
 local animation = require("plugin.animation")
 require("Networking.TCP")
+require("Networking.UDP")
 require("Networking.ping")
 local animation_triggered = false
 
@@ -134,6 +135,7 @@ end
 
 function team_management()
 if handshake_management()  then
+--UDP_conn.startUDP()
 timer.performWithDelay(200, function()
 composer.showOverlay("Modals.Choose_Team", {isModal = true, effect = "fromRight", time = 200})end)
 end
@@ -148,8 +150,8 @@ end
 
 
 function scene:init_team_game()
-timer.performWithDelay(200, function() composer.showOverlay("Modals.Team_room", {isModal = true, effect = "fromRight", time = 200} )end)
 
+timer.performWithDelay(200, function() composer.showOverlay("Modals.Team_room", {isModal = true, effect = "fromRight", time = 200} )end)
 return true
 end
 

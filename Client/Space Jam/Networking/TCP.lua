@@ -1,6 +1,6 @@
 local json = require "json"
 local socket = require("socket")
-local udp = require("Networking.UDP")
+--local udp = require("Networking.UDP")
 require("gameplay.game_manager")
 local utility = {}
 local host, port = "3.8.48.250", 41555
@@ -60,7 +60,7 @@ function utility.choose_team()
         print("RECEIVED TEAM JSON")
         timer.cancel(tmr_team)
         coroutine.resume(hide_screen_choose_team)
-        udp.startUDP()
+        --udp.startUDP()
       end
     end
   end,0)
@@ -80,12 +80,34 @@ function initial_game()
       --[[for k,v in pairs(tbl) do
           print( k,v )
         end--]]
-      if  jsn.TYPE == "START_MATCH" and jsn.RES == "OK" then
+      if  jsn.TYPE == "MATCH" and jsn.RES == "OK" then
         print("RECEIVING INFO FROM SERVER")
+        print("Closing HOST CONNECTION")
+        timer.cancel( tmr_start )
       end
     end
   end,0)
 end
+
+function game_conn()
+
+  tcp:settimeout(0)
+  tcp:send(json.encode({TYPE = "READY_FOR_MATCH"}))
+
+  tmr_gm = timer.performWithDelay(20, function()
+    local x,y,message = tcp:receive()
+
+      if(json.decode(message)) then
+        local jsn = json.decode(message)
+        
+      end
+
+
+
+
+  end,0)
+end
+
 
 function close_connection()
 tcp:close()

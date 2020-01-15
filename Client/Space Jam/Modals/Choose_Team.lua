@@ -1,4 +1,5 @@
 local composer = require('composer')
+local UDP_conn = require("Networking.UDP")
 local utility_TCP = require("Networking.TCP")
 local scene = composer.newScene()
 
@@ -79,6 +80,7 @@ if(string.len(txt_team.text) > 0 and string.len(txt_username.text) > 0 ) then
   go_pressed = true
 
     utility_TCP.choose_team()
+
     lbl_confirm.text = "J O I N I N G"
     print("JOINING TEAM")
 else
@@ -89,7 +91,9 @@ end
 
 hide_screen_choose_team = coroutine.create(function ()
 composer.hideOverlay("slideLeft", 300)
+
 coroutine.yield()
+
 return true
 end)
 
@@ -102,6 +106,7 @@ function scene:hide( event )
 
       if(go_pressed == true) then
         go_pressed = false
+        UDP_conn.startUDP()       --STARTING UDP CONNECTION
         parent:init_team_game()
       else
         parent:close_team_game()

@@ -11,7 +11,7 @@ local terrain = {}
 local players = {}
 local terrain_count = 1
 local num_players = 3
-
+local start = false
 
 function scene:create( event )
 	game_group = self.view
@@ -94,8 +94,11 @@ end
 local function onFrames(event)
 --local sx, sy = spaceship:localToContent(0,0)
 --world.y = world.y + 2*1.5  -- TODO ADD SPEED TO PLAYER THRIOGUH SPEED VAR
+
+if start then
 spaceship:translate(0,-5)
 y_val.text = math.floor(spaceship.y)
+end
 --world.y = -(sy)+display.actualContentHeight
 -- physics to move ship and loc of ship to be in contentCenterX
 end

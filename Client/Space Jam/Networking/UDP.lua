@@ -2,6 +2,7 @@ local json = require "json"
 local socket = require("socket")
 require("Modals.Team_room")
 require("gameplay.game_manager")
+require("Networking.TCP")
 local utility = {}
 udp = socket.udp()
 udp:setpeername("3.8.48.250", 55000)
@@ -15,7 +16,7 @@ end
 
 function receive_room_participants()
 
-timer.performWithDelay( 250, function()
+tmr_room_part = timer.performWithDelay( 250, function()
   data = udp:receive()
   if data then
     if (json.decode(data)) then
@@ -23,11 +24,31 @@ timer.performWithDelay( 250, function()
         if has_key(jsn,"HOST0") then
           update_room(jsn)
         end
+        if jsn.TYPE == "INITPACK_GAME" and jsn.RES == "OK" then
+          native.showAlert( "ALERT", "RECEIVED START PACKET" ,{ "GOT IT" })
+          timer.cancel(tmr_room_part)
+          game_stats()
+          game_conn()
+        end
 
     end
   end
 end,0)
+end
 
+function game_stats()
+
+  tmr_gamestats = timer.performWithDelay( 20, function()
+      data = udp:receive()
+
+      if data then
+        if (json.decode(data)) then
+          local jsn = json.decode(data)
+
+          print("TESTING NEW UDP RECEIVER")
+end
+end
+  end,0)
 end
 
 function has_key(table, key)
