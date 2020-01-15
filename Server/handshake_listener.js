@@ -59,10 +59,13 @@ function onClientConnected(sock) {
 		break;
 		
 		case "START_MATCH":
-		sock.write(JSON.stringify({TYPE: "START_MATCH", RES : "OK"}))
+		sock.write(JSON.stringify({TYPE: "MATCH", RES : "OK"}));
 		matches.player_migration(remoteAddress);
 		console.log("HOST IS TRYING TO START MATCH")
+		break;
 		
+		case "READY_FOR_MATCH":
+		console.log("REceived start of match from all devices");
 
 	default:
 		break;

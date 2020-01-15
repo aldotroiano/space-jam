@@ -99,8 +99,12 @@ function fetch_players(HOSTremoteAddress){		//Migration process from Team to Mat
 		if(team_id == player.Tid){
 			match_players.push(player);
 			// DELETE EACH PLAYER FROM THE TEAM ARRAY (SPLICE NEEDED AT THIS LINE) TODO
+			//CODE BELOW SENDS PACKET TO CLIENTS.  IF NOT REACHED, RETRY.
+			var arr = (player.udp).split(":");
+			send(JSON.stringify({TYPE : "INITPACK_GAME", RES : "OK"}),arr[0],arr[1]);
 		}
 	});
+
 
 return match_players;
 }
