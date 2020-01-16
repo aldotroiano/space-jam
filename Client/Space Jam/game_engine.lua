@@ -12,14 +12,13 @@ local players = {}
 local terrain_count = 1
 local num_players = 3
 local start = false
+camera = perspective.createView()
 
 function scene:create( event )
 	game_group = self.view
 
 	physics.start()
 	physics.stop()
-
-	camera = perspective.createView()
 
 	world = display.newGroup()
 
@@ -42,7 +41,7 @@ function scene:create( event )
 
 	y_val = display.newText("Y VAL", display.screenOriginX + 10,display.screenOriginY +15 )
 	y_val.anchorX, y_val.anchorY = 0,0
-
+	y_val:addEventListener("touch",start_var)
 --[[
 	spaceship = display.newImageRect( "Assets/rocket.png", 140, 280 )
 	spaceship.x = display.contentCenterX
@@ -59,25 +58,36 @@ function scene:create( event )
 local sheet_firespace = graphics.newImageSheet( "Assets/spaceship.png", {width=481, height=840, numFrames = 8} )
 
 spaceship = display.newSprite( sheet_firespace, {start=1, count=8, time=400, loopCount=0,loopDirection="forward"} )
-spaceship.x, spaceship.y = display.contentCenterX, (display.actualContentHeight/5)*4
+spaceship.x, spaceship.y = display.contentCenterX, (600)
+spaceship.speed = 5
 spaceship:scale(0.18, 0.18)
+spaceship.anchorY, spaceship.anchorX = 1,0.5
 spaceship:play()
 physics.addBody( spaceship, { density=2.0, friction=0.3, bounce=0.3} )
 
 	game_group:insert(background)
-	options_bar:toFront()
+	game_group:insert(options_bar)
 	game_group:insert(spaceship)
+	game_group:insert(y_val)
 
-  --sceneGroup:insert( spaceship )
-	--camera:setBounds(false,false,display.actualContentHeight,display.contentCenterY)
+	y_val:toFront()
+
+
+camera:setBounds(0,display.actualContentWidth,false,display.actualContentHeight-100)
 camera:add(spaceship,1)
 camera.damping = 10
+ship_movement()
 camera:setFocus(spaceship)
 camera:track()
 
 
 end
 
+function start_var()
+
+start = true
+
+end
 function spawnTerrain()
 	terrain[#terrain+1] = terrains.new(world, display.contentCenterY - (terrain_count*500))
 	terrain[#terrain]:toBack()
@@ -86,26 +96,31 @@ function spawnTerrain()
 end
 
 function spawnPlayers(i)
-	players[#players+1] = opponents.new(world,(display.actualContentWidth/5)*i,display.actualContentHeight - 150)
+	players[#players+1] = opponents.new(world,(display.actualContentWidth/5)*i,(600))
 	players[#players]:toFront()
+	camera:add(players[#players],4)
 	--physics.addBody( players[#players], "dynamic")
 end
 
-local function onFrames(event)
+function ship_movement()
 --local sx, sy = spaceship:localToContent(0,0)
 --world.y = world.y + 2*1.5  -- TODO ADD SPEED TO PLAYER THRIOGUH SPEED VAR
-
+tmr_move = timer.performWithDelay( 10, function()
 if start then
-spaceship:translate(0,-5)
+spaceship:translate(0,-spaceship.speed)
 y_val.text = math.floor(spaceship.y)
 end
 --world.y = -(sy)+display.actualContentHeight
 -- physics to move ship and loc of ship to be in contentCenterX
+end,0)
 end
+
 
 local function Moveship(event)
 	if(event.x > 60 and event.x < display.actualContentWidth - 60) then
+
 		spaceship.x =  event.x
+
 	end
 end
 
@@ -116,7 +131,7 @@ function scene:show( event )
 
 	if phase == "will" then
 		background:addEventListener("touch",Moveship)
-		Runtime:addEventListener("enterFrame",onFrames)
+		--Runtime:addEventListener("enterFrame",onFrames)
 
 
 
@@ -136,7 +151,7 @@ function scene:hide( event )
 		physics.stop()
 	elseif phase == "did" then
 		Runtime:removeEventListener("enterFrame",onFrames)
-		Runtime:removeEventListener("touch",Moveship)
+		--Runtime:removeEventListener("touch",Moveship)
 	end
 
 end

@@ -99,7 +99,7 @@ function game_conn()
 
       if(json.decode(message)) then
         local jsn = json.decode(message)
-        
+        order_received(jsn)
       end
 
 

@@ -44,10 +44,10 @@ function game_stats()
       if data then
         if (json.decode(data)) then
           local jsn = json.decode(data)
-
+            stats_receive(jsn)
           print("TESTING NEW UDP RECEIVER")
-end
-end
+        end
+      end
   end,0)
 end
 
