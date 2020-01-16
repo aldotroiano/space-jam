@@ -25,7 +25,7 @@ tmr_room_part = timer.performWithDelay( 250, function()
           update_room(jsn)
         end
         if jsn.TYPE == "INITPACK_GAME" and jsn.RES == "OK" then
-          native.showAlert( "ALERT", "RECEIVED START PACKET" ,{ "GOT IT" })
+          --native.showAlert( "ALERT", "RECEIVED START PACKET" ,{ "GOT IT" })
           timer.cancel(tmr_room_part)
           game_stats()
           game_conn()
@@ -44,8 +44,15 @@ function game_stats()
       if data then
         if (json.decode(data)) then
           local jsn = json.decode(data)
-            stats_receive(jsn)
-          print("TESTING NEW UDP RECEIVER")
+
+            if(jsn.TYPE == "INIT_GAME" and _G.Status ~= 0) then
+              _G.Status = jsn.STATUS
+              _G.Tid = jsn.Tid
+              _G.Pnum = jsn.Pnum
+              game_conn({TYPE = "CONFIRM_STATUS", STATUS = 0, Tid = _G.Tid,Pnum = _G.Pnum})
+            end
+
+        --  print("TESTING NEW UDP RECEIVER")
         end
       end
   end,0)

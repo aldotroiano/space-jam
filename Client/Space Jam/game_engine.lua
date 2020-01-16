@@ -10,7 +10,7 @@ local world, spaceship
 local terrain = {}
 local players = {}
 local terrain_count = 1
-local num_players = 3
+local num_players = 4
 local start = false
 camera = perspective.createView()
 
@@ -22,10 +22,10 @@ function scene:create( event )
 
 	world = display.newGroup()
 
-	for _ = 1,100 do spawnTerrain() end
-	print("Spawning terrain blocks")
+	--for _ = 1,100 do spawnTerrain() end
+	--print("Spawning terrain blocks")
 
-	for i = 1, num_players do spawnPlayers(i) end
+	for i = 1,num_players-1 do spawnPlayers(i) end
 	print("Spawning players")
 
 	background = display.newRect( display.screenOriginX, display.screenOriginY, screenW, screenH )
@@ -34,14 +34,18 @@ function scene:create( event )
 	background:setFillColor(0,0,0)
 	background.strokeWidth = 15
 
-	local options_bar = display.newRect(display.screenOriginX,display.screenOriginY,screenW,50)
+	local options_bar = display.newRect(display.screenOriginX,display.screenOriginY,screenW,80)
 	options_bar.anchorX = 0
 	options_bar.anchorY = 0
-	options_bar:setFillColor(0.5,0,0)
+	options_bar:setFillColor(0.35,0.35,0.35)
+
 
 	y_val = display.newText("Y VAL", display.screenOriginX + 10,display.screenOriginY +15 )
 	y_val.anchorX, y_val.anchorY = 0,0
 	y_val:addEventListener("touch",start_var)
+
+	local status_message = display.newText( "-",display.contentCenterX,180 )
+
 --[[
 	spaceship = display.newImageRect( "Assets/rocket.png", 140, 280 )
 	spaceship.x = display.contentCenterX
@@ -53,13 +57,12 @@ function scene:create( event )
 	spaceship:addEventListener("tap",moveShip)
 
 	physics.addBody( spaceship, { density=10.0, friction=0.3, bounce=0.3 } )
---]]
+--]]  		--OLD SPACESHIP
 
 local sheet_firespace = graphics.newImageSheet( "Assets/spaceship.png", {width=481, height=840, numFrames = 8} )
-
 spaceship = display.newSprite( sheet_firespace, {start=1, count=8, time=400, loopCount=0,loopDirection="forward"} )
 spaceship.x, spaceship.y = display.contentCenterX, (600)
-spaceship.speed = 5
+spaceship.speed = 15
 spaceship:scale(0.18, 0.18)
 spaceship.anchorY, spaceship.anchorX = 1,0.5
 spaceship:play()
@@ -70,12 +73,9 @@ physics.addBody( spaceship, { density=2.0, friction=0.3, bounce=0.3} )
 	game_group:insert(spaceship)
 	game_group:insert(y_val)
 
-	y_val:toFront()
-
-
-camera:setBounds(0,display.actualContentWidth,false,display.actualContentHeight-100)
+--camera:setBounds(0,display.actualContentWidth,false,display.actualContentHeight-100)
 camera:add(spaceship,1)
-camera.damping = 10
+camera.damping = 15
 ship_movement()
 camera:setFocus(spaceship)
 camera:track()
@@ -84,11 +84,14 @@ camera:track()
 end
 
 function start_var()
-
-start = true
-
+	if start == false then
+			start = true
+		else
+			start = false
+	end
 end
-function spawnTerrain()
+
+function spawnTerrain(server_gen_obst)
 	terrain[#terrain+1] = terrains.new(world, display.contentCenterY - (terrain_count*500))
 	terrain[#terrain]:toBack()
 	terrain_count = terrain_count + 1

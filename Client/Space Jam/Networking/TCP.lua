@@ -1,6 +1,5 @@
 local json = require "json"
 local socket = require("socket")
---local udp = require("Networking.UDP")
 require("gameplay.game_manager")
 local utility = {}
 local host, port = "3.8.48.250", 41555
@@ -89,10 +88,10 @@ function initial_game()
   end,0)
 end
 
-function game_conn()
+function game_conn(message)
 
   tcp:settimeout(0)
-  tcp:send(json.encode({TYPE = "READY_FOR_MATCH"}))
+  tcp:send(json.encode(message))
 
   tmr_gm = timer.performWithDelay(20, function()
     local x,y,message = tcp:receive()
@@ -101,10 +100,7 @@ function game_conn()
         local jsn = json.decode(message)
         order_received(jsn)
       end
-
-
-
-
+      
   end,0)
 end
 
