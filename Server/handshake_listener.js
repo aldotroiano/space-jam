@@ -65,7 +65,8 @@ function onClientConnected(sock) {
 		break;
 		
 		case "READY_FOR_MATCH":
-		console.log("REceived start of match from all devices");
+		console.log("PLAYER ASKED FOR MATCH");
+		break;
 
 	default:
 		break;
