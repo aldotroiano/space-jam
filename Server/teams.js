@@ -98,13 +98,14 @@ function fetch_players(HOSTremoteAddress){		//Migration process from Team to Mat
 	players.forEach(player => {
 		if(team_id == player.Tid){
 			match_players.push(player);
+			players.splice(players.indexOf(player),1);
+			console.log("TEAMS: ", players);
 			// DELETE EACH PLAYER FROM THE TEAM ARRAY (SPLICE NEEDED AT THIS LINE) TODO
 			//CODE BELOW SENDS PACKET TO CLIENTS.  IF NOT REACHED, RETRY.
 			var arr = (player.udp).split(":");
-			send(JSON.stringify({TYPE : "INITPACK_GAME", RES : "OK"}),arr[0],arr[1]);
+			send(JSON.stringify({TYPE : "INITPACK_GAME", RES : "OK"}),arr[0],arr[1]);			//Sending start packet to each of the team members
 		}
 	});
-
 
 return match_players;
 }

@@ -67,6 +67,10 @@ function onClientConnected(sock) {
 		case "READY_FOR_MATCH":
 		console.log("PLAYER ASKED FOR MATCH");
 		break;
+		
+		case "CONFIRM_STATUS":
+		console.log("Confirming status of single player");
+		matches.update_status(decoded_json.Tid,decoded_json.Pnum);
 
 	default:
 		break;
