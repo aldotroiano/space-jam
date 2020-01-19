@@ -1,6 +1,7 @@
 local composer = require('composer')
-local UDP_conn = require("Networking.UDP")
-local utility_TCP = require("Networking.TCP")
+--local UDP_conn = require("Networking.UDP")
+--local utility_TCP = require("Networking.TCP")
+local conn_man = require "Networking.connection_manager"
 local scene = composer.newScene()
 
 go_pressed = false
@@ -79,7 +80,7 @@ if(string.len(txt_team.text) > 0 and string.len(txt_username.text) > 0 ) then
   _G.username = txt_username.text
   go_pressed = true
 
-    utility_TCP.choose_team()
+    conn_man.choose_team_routine()
 
     lbl_confirm.text = "J O I N I N G"
     print("JOINING TEAM")
@@ -106,7 +107,7 @@ function scene:hide( event )
 
       if(go_pressed == true) then
         go_pressed = false
-        UDP_conn.startUDP()       --STARTING UDP CONNECTION
+        conn_man.init_udp()       --STARTING UDP CONNECTION
         parent:init_team_game()
       else
         parent:close_team_game()

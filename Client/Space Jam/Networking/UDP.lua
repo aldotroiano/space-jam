@@ -1,8 +1,9 @@
 local json = require "json"
 local socket = require("socket")
 require("Modals.Team_room")
-require("gameplay.game_manager")
-require("Networking.TCP")
+--require("Networking.connection_manager")
+--require("gameplay.game_manager")
+local tcp = require("Networking.TCP")
 local utility = {}
 udp = socket.udp()
 udp:setpeername("3.8.48.250", 55000)
@@ -25,10 +26,11 @@ tmr_room_part = timer.performWithDelay( 250, function()
           update_room(jsn)
         end
         if jsn.TYPE == "INITPACK_GAME" and jsn.RES == "OK" then
+          print("initpack")
           --native.showAlert( "ALERT", "RECEIVED START PACKET" ,{ "GOT IT" })
           timer.cancel(tmr_room_part)
           game_stats()
-          game_conn()
+          --start_conn_tcp()
         end
 
     end
@@ -39,6 +41,7 @@ end
 function game_stats()
 
   tmr_gamestats = timer.performWithDelay( 20, function()
+    
       data = udp:receive()
 
       if data then
@@ -49,10 +52,9 @@ function game_stats()
               _G.Status = jsn.STATUS
               _G.Tid = jsn.Tid
               _G.Pnum = jsn.Pnum
-              game_conn({TYPE = "CONFIRM_STATUS", STATUS = 0, Tid = _G.Tid,Pnum = _G.Pnum})
+              tcp.game_conn({TYPE = "CONFIRM_STATUS", STATUS = 0, Tid = _G.Tid,Pnum = _G.Pnum})
             end
 
-        --  print("TESTING NEW UDP RECEIVER")
         end
       end
   end,0)

@@ -1,11 +1,11 @@
 local json = require "json"
 local socket = require("socket")
-require("gameplay.game_manager")
+--require("Networking.UDP")
 local utility = {}
 local host, port = "3.8.48.250", 41555
 local tcp = nil
 
-function handshake_management()
+function utility.handshake_management()
 tcp = assert(socket.tcp())
 
   if setConnection() then
@@ -65,7 +65,7 @@ function utility.choose_team()
   end,0)
 end
 
-function initial_game()
+function utility.initial_game()
 
   tcp:settimeout(0)
   tcp:send(json.encode({TYPE = "START_MATCH"}))
@@ -88,7 +88,7 @@ function initial_game()
   end,0)
 end
 
-function game_conn(message)
+function utility.game_conn(message)
 
   tcp:settimeout(0)
   tcp:send(json.encode(message))
@@ -98,14 +98,14 @@ function game_conn(message)
 
       if(json.decode(message)) then
         local jsn = json.decode(message)
-        order_received(jsn)
+        --order_received(jsn)
       end
-      
+
   end,0)
 end
 
 
-function close_connection()
+function utility.close_connection()
 tcp:close()
 print("DISCONNECTED")
 end

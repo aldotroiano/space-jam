@@ -1,4 +1,5 @@
 require("game_engine")
+require("Networking.connection_manager")
 --require("Networking.TCP")
 --local composer = require( "composer" )
 

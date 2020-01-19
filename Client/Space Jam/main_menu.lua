@@ -9,8 +9,9 @@ local composer = require( "composer" )
 local scene = composer.newScene()
 local widget = require "widget"
 local animation = require("plugin.animation")
-require("Networking.TCP")
-require("Networking.UDP")
+local conn_man = require "Networking.connection_manager"
+--require("Networking.TCP")
+--require("Networking.UDP")
 require("Networking.ping")
 local animation_triggered = false
 
@@ -112,6 +113,8 @@ spaceship_fire:play()
 
 end
 
+
+
 function animations_multi()
 if check_internet_connection() == 1 then
 	--
@@ -133,43 +136,54 @@ else
 end
 end
 
-function team_management()
-if handshake_management()  then
---UDP_conn.startUDP()
-timer.performWithDelay(200, function()
-composer.showOverlay("Modals.Choose_Team", {isModal = true, effect = "fromRight", time = 200})end)
-end
 
+
+function team_management()
+
+	if conn_man.init_tcp() then
+	--UDP_conn.startUDP()
+		timer.performWithDelay(200, function()
+			composer.showOverlay("Modals.Choose_Team", {isModal = true, effect = "fromRight", time = 200})end)
+	end
 return true
 end
 
+
+
 function scene:close_team_game()
-	close_connection()
+	conn_man.close_tcp_connection()
 	return true
 end
 
 
-function scene:init_team_game()
 
+
+function scene:init_team_game()
 timer.performWithDelay(200, function() composer.showOverlay("Modals.Team_room", {isModal = true, effect = "fromRight", time = 200} )end)
 return true
 end
 
+
+
 function scene:back_from_room()
 sceneGroup:toFront()
-close_connection()
+conn_man.close_tcp_connection()
 native.showAlert( "ALERT", "You Left Team: \n".._G.team_name.." " ,{ "OK" })
 return true
 end
 
+
+
 function scene:starting_game()
 	print("Went back to parent")
-	initial_game()
+	conn_man.initial_game_tcp()
 	--sceneGroup:toBack()
 	--timer.performWithDelay( 200, function() composer.showOverlay( "game_engine", {effect = "fade", time = 200})end )
 	--sceneGroup:toBack()
 	return true
 end
+
+
 
 function scene:show( event )
 	local sceneGroup = self.view
@@ -185,6 +199,8 @@ function scene:show( event )
 		-- e.g. start timers, begin animation, play audio, etc.
 	end
 end
+
+
 
 function scene:hide( event )
 	local sceneGroup = self.view
@@ -202,6 +218,8 @@ function scene:hide( event )
 	end
 end
 
+
+
 function scene:destroy( event )
 	local sceneGroup = self.view
 
@@ -211,6 +229,8 @@ function scene:destroy( event )
 	-- e.g. remove display objects, remove touch listeners, save state, etc.
 
 end
+
+
 
 ---------------------------------------------------------------------------------
 
