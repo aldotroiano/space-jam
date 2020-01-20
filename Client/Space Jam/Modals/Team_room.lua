@@ -78,6 +78,8 @@ if _G.is_host == 1 then
 end
 end
 
+
+
 function update_room(json_players)
   lbl_players.text = ""
   lbl_hosts.text = ""

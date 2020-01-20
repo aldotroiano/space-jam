@@ -22,8 +22,8 @@ function scene:create( event )
 
 	world = display.newGroup()
 
-	--for _ = 1,100 do spawnTerrain() end
-	--print("Spawning terrain blocks")
+	for _ = 1,100 do spawnTerrain() end
+	print("Spawning terrain blocks")
 
 	for i = 1,num_players-1 do spawnPlayers(i) end
 	print("Spawning players")
@@ -44,7 +44,7 @@ function scene:create( event )
 	y_val.anchorX, y_val.anchorY = 0,0
 	y_val:addEventListener("touch",start_var)
 
-	local status_message = display.newText( "-",display.contentCenterX,180 )
+	status_message = display.newText( "-",display.contentCenterX,180,"fonts/FallingSky.otf",30 )
 
 --[[
 	spaceship = display.newImageRect( "Assets/rocket.png", 140, 280 )
@@ -90,6 +90,13 @@ function start_var()
 			start = false
 	end
 end
+
+
+function set_status_message(message)
+
+status_message.text = message
+end
+
 
 function spawnTerrain(server_gen_obst)
 	terrain[#terrain+1] = terrains.new(world, display.contentCenterY - (terrain_count*500))
