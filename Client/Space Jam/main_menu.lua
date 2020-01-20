@@ -31,6 +31,7 @@ end
 end
 
 function scene:create( event )
+	_G.Status = 0
 	sceneGroup = self.view
 
   title_group, single_group, multi_group, multi_group_btns = display.newGroup(), display.newGroup(), display.newGroup(), display.newGroup()
@@ -177,9 +178,6 @@ end
 function scene:starting_game()
 	print("Went back to parent")
 	conn_man.initial_game_tcp()
-	--sceneGroup:toBack()
-	--timer.performWithDelay( 200, function() composer.showOverlay( "game_engine", {effect = "fade", time = 200})end )
-	--sceneGroup:toBack()
 	return true
 end
 

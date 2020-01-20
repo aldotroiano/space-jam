@@ -1,5 +1,5 @@
 require("game_engine")
-require("Networking.connection_manager")
+--require("Networking.connection_manager")
 --require("Networking.TCP")
 --local composer = require( "composer" )
 
@@ -15,4 +15,13 @@ end
 function order_received(jsn)
 
 print("Received packet from TCP")
+end
+
+function update_message(message)
+set_status_message(message)
+end
+
+function terrain_generation(table_arr)
+
+print("GOT IT")
 end
