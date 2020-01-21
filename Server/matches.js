@@ -41,7 +41,7 @@ case 0:
 	for (var i = 1; i <= match.Pnum; i++){
 		var arr = (match[i].udp).split(":");
 		if(match[i].st == 0){
-			teams.send(JSON.stringify({TYPE : "INIT_GAME", STATUS : 1, Tid : match.Tid, Pindex : i}),arr[0],arr[1]);
+			teams.send(JSON.stringify({TYPE : "INIT_GAME", STATUS : 1, Tid : match.Tid, Pindex : i,Pnum : match.Pnum}),arr[0],arr[1]);
 		}
 	}
 	break;
