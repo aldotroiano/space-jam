@@ -54,29 +54,43 @@ function game_stats()
               _G.Status = jsn.STATUS
               _G.Tid = jsn.Tid
               _G.Pindex = jsn.Pindex
+              _G.Pnum = jsn.Pnum
               print("Status 1 confirmed")
-              tcp.game_conn({TYPE = "CONFIRM_STATUS", STATUS = _G.Status, Tid = _G.Tid, Pnum = _G.Pindex})
+              tcp.game_conn({TYPE = "CONFIRM_STATUS", STATUS = _G.Status, Tid = _G.Tid, Pindex = _G.Pindex})
               update_message("(1) Connecting Players...")
-            end
 
-            if(jsn.TYPE == "INIT_GAME" and _G.Status == 1 and jsn.STATUS > _G.Status) then
+          elseif(jsn.TYPE == "INIT_GAME" and _G.Status == 1 and jsn.STATUS > _G.Status) then
               print("Status 2 confirmed")
               _G.Status = jsn.STATUS
 
-              -- TODO need to save player and transmit it to the player placeholders in game engine
+              player_generation(jsn.INFO)
 
-              tcp.game_conn({TYPE = "CONFIRM_STATUS", STATUS = _G.Status, Tid = _G.Tid, Pnum = _G.Pindex})
+              tcp.game_conn({TYPE = "CONFIRM_STATUS", STATUS = _G.Status, Tid = _G.Tid, Pindex = _G.Pindex})
               update_message("(2) Receiving Player Data...")
-            end
 
-
-            if(jsn.TYPE == "INIT_GAME" and _G.Status == 2 and jsn.STATUS > _G.Status) then
+          elseif(jsn.TYPE == "INIT_GAME" and _G.Status == 2 and jsn.STATUS > _G.Status) then
               print("Status 3 confirmed")
               _G.Status = jsn.STATUS
-              tcp.game_conn({TYPE = "CONFIRM_STATUS", STATUS = _G.Status, Tid = _G.Tid, Pnum = _G.Pindex})
-              terrain_generation(jsn.MAP)
+              tcp.game_conn({TYPE = "CONFIRM_STATUS", STATUS = _G.Status, Tid = _G.Tid, Pindex = _G.Pindex})
+              terrain_generation(jsn.MAP)       --Inputting in engine generated terrain
+              print(tablex.size(jsn.MAP))
               update_message("(3) Receiving and Rendering Terrain...")
 
+          elseif(jsn.TYPE == "INIT_GAME" and _G.Status == 3 and jsn.STATUS > _G.Status) then
+              print("Status 4 confirmed")
+              _G.Status = jsn.STATUS
+              tcp.game_conn({TYPE = "CONFIRM_STATUS", STATUS = _G.Status, Tid = _G.Tid, Pindex = _G.Pindex})
+
+
+              update_message("(4) Synching Players...")
+
+          elseif(jsn.TYPE == "INIT_GAME" and _G.Status == 4 and jsn.STATUS > _G.Status) then
+              print("Status 5 confirmed")
+              _G.Status = jsn.STATUS
+              tcp.game_conn({TYPE = "CONFIRM_STATUS", STATUS = _G.Status, Tid = _G.Tid, Pindex = _G.Pindex})
+
+
+              update_message("(5) Starting Game...")
             end
 
 

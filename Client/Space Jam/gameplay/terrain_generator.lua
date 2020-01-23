@@ -2,7 +2,7 @@ local terr = {}
 local map = display.newGroup()
 
 
-function terr.new(world,y)
+function terr.new(world,x_cord,y)
 instance = display.newGroup()
 
   --[[for i = 1,40,1
@@ -12,7 +12,8 @@ instance = display.newGroup()
     instance:insert(star)
   end--]]
 
-  local left_max = math.random(0,display.actualContentWidth-200)
+  --local left_max = math.random(0,display.actualContentWidth-200)
+  local left_max = x_cord
   local r_rand, g_rand, b_rand = math.random(), math.random(),math.random()
 
   local r1 = display.newRect(display.actualContentWidth+10, y,(-left_max),95)

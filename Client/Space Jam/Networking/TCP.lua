@@ -76,10 +76,7 @@ function utility.initial_game()
 
     if(json.decode(message)) then
       local jsn = json.decode(message)
-      --local tbl = jsn.x_coord
-      --[[for k,v in pairs(tbl) do
-          print( k,v )
-        end--]]
+      
       if  jsn.TYPE == "MATCH" and jsn.RES == "OK" then
         print("RECEIVING INFO FROM SERVER")
         print("Closing HOST CONNECTION")
