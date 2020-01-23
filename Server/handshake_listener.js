@@ -69,7 +69,7 @@ function onClientConnected(sock) {
 		break;
 		
 		case "CONFIRM_STATUS":
-		console.log("Confirming status of single player");
+		//console.log("Confirming status of single player");
 		matches.update_status(decoded_json.Tid,decoded_json.Pindex,decoded_json.STATUS);
 		
 	default:
