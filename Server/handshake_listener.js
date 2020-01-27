@@ -1,6 +1,6 @@
 var db = require('./database_connection.js');
-var matches = require('./matches.js');
-var teams = require('./teams.js');
+//var matches = require('./matches.js');
+var teams = require('./teams_matches.js');
 var start_listener = function(){
 
 var net = require('net');
@@ -60,17 +60,17 @@ function onClientConnected(sock) {
 		
 		case "START_MATCH":
 		sock.write(JSON.stringify({TYPE: "MATCH", RES : "OK"}));
-		matches.player_migration(remoteAddress);
+		teams.player_migration(remoteAddress);
 		console.log("HOST IS TRYING TO START MATCH")
 		break;
 		
-		case "READY_FOR_MATCH":
-		console.log("PLAYER ASKED FOR MATCH");
+		case "IN_MATCH":
+		
 		break;
 		
 		case "CONFIRM_STATUS":
 		//console.log("Confirming status of single player");
-		matches.update_status(decoded_json.Tid,decoded_json.Pindex,decoded_json.STATUS);
+		teams.update_status(decoded_json.Tid,decoded_json.Pindex,decoded_json.STATUS);
 		
 	default:
 		break;
