@@ -28,7 +28,7 @@ try{
     	break;
     	
     	case "IN_GAME":
-    	update_player(decoded_json.Tid,decoded_json.Pindex,decoded_json.x,decoded_json.y);
+    	update_player(decoded_json.Tid,decoded_json.Pindex,decoded_json.x,decoded_json.y,decoded_json.health,decoded_json.rotation);
     	break;
 
 		default:
@@ -174,6 +174,7 @@ match_array.forEach(player => {
 	"y" : 600,
 	"speed" : 10,
 	"hp" : 100,
+	"rot" : 0,
 	"pos" : -1,
 	}
 	count++;
@@ -277,13 +278,14 @@ if(sum/match.Pnum == status){ match.Status = status; }
 
 }
 
-function update_player(Tid,Pindex,x,y){
+function update_player(Tid,Pindex,x,y,hp,rot){
 
 matches.forEach(match => {
 if(match.Tid == Tid){
 match[Pindex].x = x;
 match[Pindex].y = y;
-
+match[Pindex].hp = hp;
+match[Pindex].rot = rot;
 }
 
 
