@@ -88,12 +88,12 @@ function scene:create( event )
   lbl_multi_online:setFillColor(255,255,255)
   lbl_multi_online.alpha = 0.0
 
-	local sheet_firespace = graphics.newImageSheet( "Assets/spaceship.png", {width=481, height=840, numFrames = 8} )
+	local sheet_firespace = graphics.newImageSheet( "Assets/spaceship.png", {width=85, height=149, numFrames = 8} )
 
 	local spaceship_fire = display.newSprite( sheet_firespace, {start=1, count=8, time=400, loopCount=0,loopDirection="forwardf"} )
 	spaceship_fire.x, spaceship_fire.y = display.contentCenterX, display.actualContentHeight * 0.8
 
-spaceship_fire:scale(0.25, 0.25)
+spaceship_fire:scale(1.2, 1.2)
 spaceship_fire:play()
 
 	sceneGroup:insert( background )

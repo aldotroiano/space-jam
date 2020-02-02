@@ -25,12 +25,15 @@ end
 
 function terrain_generation(tbl)
 
-  for k,v in pairs(tbl) do
-      spawnObstacle(v)            --Spawning obstacles loop
-      print(k,v)
-    end
+for i = 1, #tbl, 1 do
+  if i < 200 then
+    spawnObstacle(tbl[i][1],tbl[i][2])
+    print(i)
+  elseif i >= 200 and i <= 265 then
+    spawnAsteroid(tbl[i][1],tbl[i][2])
+  end
 end
-
+end
 
 function player_generation(tbl)
 print("Got playerinfo")
@@ -42,5 +45,18 @@ for i = 1,_G.Pnum,1 do
     spawnPlayers(i,tbl[tostring(i)].x,tbl[tostring(i)].y,tbl[tostring(i)].Usr)
   end
 end
+end
+
+function server_start(timestamp)
+  local ost = os.time(os.date('!*t'))
+  local rem_time = (timestamp - ost)      -- Subtracting local timestamp from server timestamp for start time
+
+  print(TIME_UNTIL_START)
+  updateTimer_start(rem_time)
+end
+
+function set_player_pos(tbl)
+
+setPlayerPos(tbl)
 
 end

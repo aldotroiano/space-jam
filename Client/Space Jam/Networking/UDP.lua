@@ -7,7 +7,7 @@ require("Modals.intermediary")
 local tcp = require("Networking.TCP")
 local utility = {}
 udp = socket.udp()
-udp:setpeername("3.8.48.250", 55000)
+udp:setpeername("35.178.99.133", 55000)
 udp:settimeout(0)
 
 function utility.startUDP()
@@ -42,11 +42,12 @@ end
 
 function game_stats()
   show_gm()         --Showing game on screen
+  _G.ingame = false
   tmr_gamestats = timer.performWithDelay( 20, function()
 
       data = udp:receive()
 
-      if data then
+      if data and _G.ingame == false then
         if (json.decode(data)) then
           local jsn = json.decode(data)
 
@@ -73,7 +74,7 @@ function game_stats()
               _G.Status = jsn.STATUS
               tcp.game_conn({TYPE = "CONFIRM_STATUS", STATUS = _G.Status, Tid = _G.Tid, Pindex = _G.Pindex})
               terrain_generation(jsn.MAP)       --Inputting in engine generated terrain
-              print(tablex.size(jsn.MAP))
+
               update_message("(3) Receiving and Rendering Terrain...")
 
           elseif(jsn.TYPE == "INIT_GAME" and _G.Status == 3 and jsn.STATUS > _G.Status) then
@@ -81,27 +82,37 @@ function game_stats()
               _G.Status = jsn.STATUS
               tcp.game_conn({TYPE = "CONFIRM_STATUS", STATUS = _G.Status, Tid = _G.Tid, Pindex = _G.Pindex})
 
-
               update_message("(4) Synching Players...")
 
           elseif(jsn.TYPE == "INIT_GAME" and _G.Status == 4 and jsn.STATUS > _G.Status) then
-              print("Status 5 confirmed")
+              print("Status 5 confirmed - Starting Game")
               _G.Status = jsn.STATUS
               tcp.game_conn({TYPE = "CONFIRM_STATUS", STATUS = _G.Status, Tid = _G.Tid, Pindex = _G.Pindex})
-
-
+              server_start(jsn.TIMESTAMP)
               update_message("(5) Starting Game...")
+              _G.ingame = true
+
             end
-
-
-
+          end
         end
+
+      if data and _G.ingame == true then
+          local jsn = json.decode(data)
+        if(jsn.TYPE == "GAME") then
+
+          set_player_pos(jsn.INFO)
+          end
+
       end
+
+      if _G.ingame == true then
+        udp:send(json.encode({TYPE = 'IN_GAME',Tid = _G.Tid, Pindex = _G.Pindex, x = _G.x, y = _G.y, health = _G.health,rotation = _G.rotation}))
+      end
+
   end,0)
 end
 
 function utility.send(message)
-
   udp:send(json.encode(message))      --Sending UDP packet
 
 end

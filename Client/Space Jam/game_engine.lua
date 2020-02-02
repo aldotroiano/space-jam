@@ -4,27 +4,29 @@ local scene = composer.newScene()
 local physics = require "physics"
 local opponents = require "gameplay.opponents"
 local terrains = require "gameplay.terrain_generator"
+local asteroids = require "gameplay.asteroid_generator"
 local perspective = require("Libraries.perspective")
+require "ssk2.loadSSK"
+--local conn_man = require("Networking.connection_manager")
 local screenW, screenH, halfW = display.actualContentWidth, display.actualContentHeight, display.contentCenterX
 local world, spaceship
-local terrain = {}
+local terrain, asteroid = {},{}
 local players = {}
-local terrain_count = 1
+local terrain_c, asteroid_c = 1,1
 local num_players = 4
 local start = false
+
 camera = perspective.createView()
+_G.ssk.init()
 
 function scene:create( event )
 	game_group = self.view
+physics.start()
+physics.pause()
 
-	physics.start()
-	physics.stop()
+	physics.setGravity( 0, 0 )
 
 	world = display.newGroup()
-
-	--for _ = 1,100 do spawnTerrain() end
-
-
 
 	background = display.newRect( display.screenOriginX, display.screenOriginY, screenW, screenH )
 	background.anchorX = 0
@@ -32,52 +34,83 @@ function scene:create( event )
 	background:setFillColor(0,0,0)
 	background.strokeWidth = 15
 
-	local options_bar = display.newRect(display.screenOriginX,display.screenOriginY,screenW,80)
+	local options_bar = display.newRect(display.screenOriginX+8,display.screenOriginY+8,screenW-16,100)
 	options_bar.anchorX = 0
 	options_bar.anchorY = 0
-	options_bar:setFillColor(0.35,0.35,0.35)
+	options_bar.alpha = 0.6
+	options_bar:toFront()
+	options_bar:setFillColor(0.25,0.25,0.25)
+
+	health_title_lbl = display.newText("HEALTH:", (display.actualContentWidth/6),display.screenOriginY +15 )
+	health_title_lbl.anchorX, health_title_lbl.anchorY = 0.5,0
+	health_title_lbl.size = 22
+	health_title_lbl:addEventListener("touch",start_var)
+
+	health_lbl = display.newText("100%", (display.actualContentWidth/6),display.screenOriginY +50 )
+	health_lbl.anchorX, health_lbl.anchorY = 0.5,0
+	health_lbl.size = 35
+
+	boost_title_lbl = display.newText("BOOST:", (display.actualContentWidth/6)*5,display.screenOriginY +15 )
+	boost_title_lbl.anchorX, boost_title_lbl.anchorY = 0.5,0
+	boost_title_lbl.size = 22
+
+	boost_lbl = display.newText("0%", (display.actualContentWidth/6)*5,display.screenOriginY +50 )
+	boost_lbl.anchorX, boost_lbl.anchorY = 0.5,0
+	boost_lbl.size = 35
+
+	Position_lbl = display.newText("3rd", (display.actualContentWidth/6)*3,display.screenOriginY +55 )
+	Position_lbl.anchorX, Position_lbl.anchorY = 0.5,0.5
+	Position_lbl.size = 80
+
+	--realtime_player_pos = display.newRect(display.screenOriginX+8,display.screenOriginY+8,screenW-16,100)
+
+	status_message = display.newText( "Connecting",display.contentCenterX,180,"fonts/FallingSky.otf",30 )
+
+	countdown_lbl = display.newText( " ",display.contentCenterX,180,"fonts/FallingSky.otf",100 )
 
 
-	y_val = display.newText("Y VAL", display.screenOriginX + 10,display.screenOriginY +15 )
-	y_val.anchorX, y_val.anchorY = 0,0
-	y_val:addEventListener("touch",start_var)
-
-	status_message = display.newText( "-",display.contentCenterX,180,"fonts/FallingSky.otf",30 )
-
---[[
-	spaceship = display.newImageRect( "Assets/rocket.png", 140, 280 )
-	spaceship.x = display.contentCenterX
-	spaceship.y = (display.actualContentHeight/5)*4
-	spaceship.anchorY = 1
-	spaceship.rotation = 0
-	spaceship.alpha = 1
-	spaceship:addEventListener("touch",moveShip)
-	spaceship:addEventListener("tap",moveShip)
-
-	physics.addBody( spaceship, { density=10.0, friction=0.3, bounce=0.3 } )
---]]  		--OLD SPACESHIP
-
-local sheet_firespace = graphics.newImageSheet( "Assets/spaceship.png", {width=481, height=840, numFrames = 8} )
+local sheet_firespace = graphics.newImageSheet( "Assets/spaceship.png", {width=85, height=149, numFrames = 8}  )
 spaceship = display.newSprite( sheet_firespace, {start=1, count=8, time=400, loopCount=0,loopDirection="forward"} )
 spaceship.y = 600
+spaceship.myName = "spaceship"
 spaceship.x = display.contentCenterX
-spaceship.speed = 15
-spaceship:scale(0.18, 0.18)
-spaceship.anchorY, spaceship.anchorX = 1,0.5
+spaceship.speed = 550
+
+local outline1 = graphics.newOutline( 1, sheet_firespace, 1)
+spaceship.anchorY, spaceship.anchorX = 0.5,0.5
 spaceship:play()
-physics.addBody( spaceship, { density=2.0, friction=0.3, bounce=0.3} )
+spaceship.collision = onLocalCollision
+
+spaceship:addEventListener( "collision" )
+
+physics.addBody( spaceship, "dynamic", {density=30,friction=0,bounce=0})
+
+--spaceship.isFixedRotation = true
+spaceship.isBullet = true
+--local rightwall = display.newRect(display.contentCenterX, display.contentCenterY-250, 100, 100 )
+
+--physics.addBody( rightwall, "static", {density=200,friction=10,bounce=10})
+
+--touchjoint = physics.newJoint( "touch", spaceship, spaceship.x, spaceship.y+20 )
 
 	game_group:insert(background)
 	game_group:insert(options_bar)
+	game_group:insert(health_lbl)
+	--game_group:insert(rightwall)
 	game_group:insert(spaceship)
-	game_group:insert(y_val)
+	game_group:insert(health_title_lbl)
+	game_group:insert(boost_title_lbl)
+	game_group:insert(boost_lbl)
+	game_group:insert(Position_lbl)
 
 --camera:setBounds(0,display.actualContentWidth,false,display.actualContentHeight-100)
 camera:add(spaceship,1)
-camera.damping = 15
+ camera.damping = 15
 ship_movement()
 camera:setFocus(spaceship)
 camera:track()
+--physics.setDrawMode( "hybrid" )   -- Shows collision engine outlines only
+physics.start()
 
 
 end
@@ -90,52 +123,160 @@ function start_var()
 	end
 end
 
+function updateTimer_start(rem_time)
+
+	 tmr_countdown = timer.performWithDelay( 1000, function()
+
+		    rem_time = rem_time - 1
+
+			if(rem_time ~= 0) then
+
+				if(rem_time < 4) then
+					status_message.alpha = 0
+		    	countdown_lbl.text = rem_time
+				end
+			else
+				countdown_lbl.size = 110
+				countdown_lbl.text = "GO!"
+				timer.cancel( tmr_countdown)
+				timer.performWithDelay( 700, function()
+					transition.fadeOut( countdown_lbl, { time=200 } )
+					start = true
+
+				end,1)
+			end
+	end,0)
+end
 
 function set_status_message(message)
 status_message.text = message
 end
 
-function spawnObstacle(x_cord)
+function spawnObstacle(x,y)
 	print("Spawning terrain blocks")
-
-	terrain[#terrain+1] = terrains.new(world,x_cord, display.contentCenterY - (terrain_count*500))
+	terrain[#terrain+1] = terrains.new(world,x, display.contentCenterY - (terrain_c *y))
 	terrain[#terrain]:toBack()
-	terrain_count = terrain_count + 1
+	terrain_c = terrain_c + 1
 	camera:add(terrain[#terrain],3)
 end
 
+function spawnAsteroid(x,y)
+	print("Spawning Asteroids")
+	asteroid[#asteroid+1] = asteroids.new(world,x, display.contentCenterY/3 - (asteroid_c*y))
+	asteroid[#asteroid]:toBack()
+	asteroid_c = asteroid_c + 1
+	camera:add(asteroid[#asteroid],5)
+end
+
+
+function onLocalCollision( self, event )
+
+	if self.myName == "spaceship" and event.other.myName == "asteroid" then
+		_G.health = _G.health - 1
+		health_lbl.text = _G.health.."%"
+	end
+
+	if ( event.phase == "began" ) then
+
+		print( "collision began wit")
+
+	elseif ( event.phase == "ended" ) then
+
+		print("collision ended")
+
+	end
+end
+
+
 function spawnPlayerMain(x,y)
 print("Spawning Main Player")
+    _G.x = x
+		_G.y = y
+		_G.health = 100;
+	print("x,y of MAIN : ", x, " ", y)
 spaceship.x, spaceship.y = x, y
 end
 
 function spawnPlayers(i,x,y,name)
-	print("Spawning opponents")
+	print("Spawning opponents at", x , y)
 	players[i] = opponents.new(world,i,x,y,name)
+
 	players[i]:toFront()
 	camera:add(players[i],4)
-	--physics.addBody( players[#players], "dynamic")
+end
+
+function setPlayerPos(tbl)
+
+	for i = 1,_G.Pnum,1 do
+		if(i ~= _G.Pindex) then
+		--transition.to( players[i].rotation, {rotation = tbl[tostring(i)].rotation} )
+		players[i].rotation = tbl[tostring(i)].rotation
+
+		--players[i].x = tbl[tostring(i)].x-270*i*0.5
+		--players[i].y = tbl[tostring(i)].y-600
+		transition.moveTo( players[i], { x=tbl[tostring(i)].x-276*i*0.5, y=tbl[tostring(i)].y-600, time=140 } )
+
+	--else
+		--health_lbl.text = (tbl[tostring(i)].hp).."%"
+	end
+	end
+
 end
 
 function ship_movement()
---local sx, sy = spaceship:localToContent(0,0)
---world.y = world.y + 2*1.5  -- TODO ADD SPEED TO PLAYER THRIOGUH SPEED VAR
-tmr_move = timer.performWithDelay( 10, function()
+
+tmr_move = timer.performWithDelay( 2, function()
 if start then
-spaceship:translate(0,-spaceship.speed)
-y_val.text = math.floor(spaceship.y)
-end
---world.y = -(sy)+display.actualContentHeight
--- physics to move ship and loc of ship to be in contentCenterX
-end,0)
+
+	--spaceship:setLinearVelocity( 0, -50,spaceship.x,spaceship.y)
+
+--spaceship:applyForce(spaceship.speed*xComp,spaceship.speed*yComp,spaceship.x,spaceship.y)
+ssk.actions.move.forward( spaceship, {rate = spaceship.speed} )
+
+	--ssk.actions.movep.forward( spaceship, {rate = spaceship.speed} )
+--ssk.actions.movep.impulseForward( spaceship, {rate = spaceship.speed} )
+--spaceship:applyLinearImpulse(spaceship.speed*xComp, spaceship.speed*yComp, spaceship.x, spaceship.y)
+				                        --  "up" the screen is negative
+	--spaceship:applyForce((math.cos(math.rad(spaceship.rotation)) * spaceship.speed),(-1 * math.sin(math.rad(spaceship.rotation)) * (spaceship.speed)))
+	--spaceship:translate(0,-spaceship.speed)
+	health_title_lbl.text = math.floor(spaceship.y)
+	_G.y = spaceship.y
+	_G.x = spaceship.x
 end
 
+end,0)
+end
 
 local function Moveship(event)
 	if(event.x > 60 and event.x < display.actualContentWidth - 60) then
 
-		spaceship.x =  event.x
+		--local vecX, vecY = angle2VecDeg( spaceship.rotation )
 
+		--spaceship.angularVelocity = 0
+	 --spaceship:applyForce ( vecX, vecY, spaceship.x, spaceship.y-30 )
+		--spaceship:applyAngularImpulse( 10 )
+		--spaceship:applyTorque(1)
+		--spaceship:applyForce( 0, -20, spaceship.x, spaceship.y)
+		--ssk.actions.movep.thrustForward( spaceship, { rate = 1 } )
+		--ssk.actions.movep.thrustForward( spaceship, { rate = spaceship.speed } )
+		if(event.x > 350) then
+		spaceship.rotation = -(event.x-350)*0.35
+		_G.rotation = spaceship.rotation
+	elseif(event.x < 332) then
+		spaceship.rotation = (332 - event.x)*0.35
+		_G.rotation = spaceship.rotation
+	end
+		--spaceship.x = event.x				--TODO: prev. used code
+
+		--spaceship.rotation = (display.actualContentWidth/2 - event.x)*0.3
+--local angle  = spaceship.rotation
+--local newVec = angle2Vector( angle, true )
+--local scaledVec = scale( impulseVal , newVec )
+--spaceship:applyLinearImpulse( scaledVec.x, scaledVec.y, spaceship.x, spaceship.y)
+		--touchjoint:setTarget( normDeltaX,normDeltaY)
+		--spaceship.x =  event.x
+		--spaceship:applyAngularImpulse( 10 )
+		--_G.x = event.x
 	end
 end
 
@@ -151,9 +292,10 @@ function scene:show( event )
 
 
 	elseif phase == "did" then
-composer.removeScene( "main_menu",false)
-print("Removing previous scene")
-	physics.start()
+		composer.removeScene( "main_menu",false)
+		print("Removing Menu scene")
+
+
 	end
 end
 
@@ -163,7 +305,7 @@ function scene:hide( event )
 
 	if event.phase == "will" then
 
-		physics.stop()
+	--	physics.stop()
 	elseif phase == "did" then
 		Runtime:removeEventListener("enterFrame",onFrames)
 		--Runtime:removeEventListener("touch",Moveship)

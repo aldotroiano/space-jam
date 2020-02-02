@@ -3,7 +3,7 @@ local socket = require("socket")
 --require("Networking.UDP")
 require("gameplay.game_manager")
 local utility = {}
-local host, port = "3.8.48.250", 41555
+local host, port = "35.178.99.133", 41555
 local tcp = nil
 
 function utility.handshake_management()
@@ -76,7 +76,7 @@ function utility.initial_game()
 
     if(json.decode(message)) then
       local jsn = json.decode(message)
-      
+
       if  jsn.TYPE == "MATCH" and jsn.RES == "OK" then
         print("RECEIVING INFO FROM SERVER")
         print("Closing HOST CONNECTION")
