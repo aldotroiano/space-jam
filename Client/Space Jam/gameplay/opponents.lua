@@ -23,21 +23,24 @@ local sheet_firespace = graphics.newImageSheet( "Assets/spaceship.png", {width=8
 
   full_opponent:insert(body)
 
-  local name = display.newText(world.parent,tostring(name),body.x,body.y+14,"fonts/FallingSky.otf",14 )
+  --[[local name = display.newText(world,tostring(name),body.x,body.y+5,"fonts/FallingSky.otf",14 )
   name.anchorX = 0.5
   name:setFillColor(255,255,255)
 
   full_opponent:insert(name)
+--]]
+  physics.addBody(body, "kinematic",{density=30,friction=0,bounce=0})
+  
+  body.isSleepingAllowed = false
+  body.myName = "opponent"
 
-  physics.addBody(full_opponent, "kinematic")
 
-
-  function world:collision(event)
+--[[ function world:collision(event)
     print("COLLIDED WITH OTHER SPACESHIP!")
-  end
+  end--]]
 
   world:insert(full_opponent)
-  --world:insert(name)
-  return full_opponent
+
+  return body
 end
 return O

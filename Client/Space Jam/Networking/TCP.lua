@@ -3,7 +3,7 @@ local socket = require("socket")
 --require("Networking.UDP")
 require("gameplay.game_manager")
 local utility = {}
-local host, port = "35.178.99.133", 41555
+local host, port = "35.176.107.7", 41555
 local tcp = nil
 
 function utility.handshake_management()

@@ -24,15 +24,16 @@ set_status_message(message)
 end
 
 function terrain_generation(tbl)
-
+  spawnBoundaries()
 for i = 1, #tbl, 1 do
   if i < 200 then
     spawnObstacle(tbl[i][1],tbl[i][2])
-    print(i)
+    --print(i)
   elseif i >= 200 and i <= 265 then
     spawnAsteroid(tbl[i][1],tbl[i][2])
   end
 end
+
 end
 
 function player_generation(tbl)

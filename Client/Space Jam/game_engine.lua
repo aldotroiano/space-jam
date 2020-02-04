@@ -3,8 +3,10 @@ local composer = require( "composer" )
 local scene = composer.newScene()
 local physics = require "physics"
 local opponents = require "gameplay.opponents"
+local boundaries = require "gameplay.boundaries"
 local terrains = require "gameplay.terrain_generator"
 local asteroids = require "gameplay.asteroid_generator"
+
 local perspective = require("Libraries.perspective")
 require "ssk2.loadSSK"
 --local conn_man = require("Networking.connection_manager")
@@ -87,17 +89,18 @@ physics.addBody( spaceship, "dynamic", {density=30,friction=0,bounce=0})
 
 --spaceship.isFixedRotation = true
 spaceship.isBullet = true
---local rightwall = display.newRect(display.contentCenterX, display.contentCenterY-250, 100, 100 )
 
---physics.addBody( rightwall, "static", {density=200,friction=10,bounce=10})
-
+--world:insert(rightwall)
 --touchjoint = physics.newJoint( "touch", spaceship, spaceship.x, spaceship.y+20 )
+
+
 
 	game_group:insert(background)
 	game_group:insert(options_bar)
 	game_group:insert(health_lbl)
-	--game_group:insert(rightwall)
+
 	game_group:insert(spaceship)
+	--game_group:insert(rightwall)
 	game_group:insert(health_title_lbl)
 	game_group:insert(boost_title_lbl)
 	game_group:insert(boost_lbl)
@@ -110,8 +113,8 @@ ship_movement()
 camera:setFocus(spaceship)
 camera:track()
 --physics.setDrawMode( "hybrid" )   -- Shows collision engine outlines only
+--spawnPlayers(1,200,600,"ha")
 physics.start()
-
 
 end
 
@@ -152,6 +155,13 @@ function set_status_message(message)
 status_message.text = message
 end
 
+function spawnBoundaries()
+bond = boundaries.new(world,spaceship)
+bond:toBack()
+camera:add(bond,7)
+
+end
+
 function spawnObstacle(x,y)
 	print("Spawning terrain blocks")
 	terrain[#terrain+1] = terrains.new(world,x, display.contentCenterY - (terrain_c *y))
@@ -172,6 +182,10 @@ end
 function onLocalCollision( self, event )
 
 	if self.myName == "spaceship" and event.other.myName == "asteroid" then
+		_G.health = _G.health - 1
+		health_lbl.text = _G.health.."%"
+	end
+	if self.myName == "spaceship" and event.other.myName == "opponent" then
 		_G.health = _G.health - 1
 		health_lbl.text = _G.health.."%"
 	end
@@ -200,22 +214,29 @@ end
 function spawnPlayers(i,x,y,name)
 	print("Spawning opponents at", x , y)
 	players[i] = opponents.new(world,i,x,y,name)
-
+	--players[i].rotation = 10
 	players[i]:toFront()
+--game_group:insert(players[i])
 	camera:add(players[i],4)
+
 end
 
 function setPlayerPos(tbl)
 
 	for i = 1,_G.Pnum,1 do
 		if(i ~= _G.Pindex) then
-		--transition.to( players[i].rotation, {rotation = tbl[tostring(i)].rotation} )
-		players[i].rotation = tbl[tostring(i)].rotation
+
+		--transition.to( players[i].rotation, {rotation = tbl[tostring(i)].rotation} )			-- TODO IMPLEMENT CORREsCTLY
+
 
 		--players[i].x = tbl[tostring(i)].x-270*i*0.5
 		--players[i].y = tbl[tostring(i)].y-600
-		transition.moveTo( players[i], { x=tbl[tostring(i)].x-276*i*0.5, y=tbl[tostring(i)].y-600, time=140 } )
+		--players[i].isBodyActive = false
+		transition.to( players[i], { x=tbl[tostring(i)].x,y=tbl[tostring(i)].y, rotation = tbl[tostring(i)].rot, time = 140})
 
+		--transition.to( players[i], { x=tbl[tostring(i)].x-276*i*0.5,y=tbl[tostring(i)].y-600, rotation = tbl[tostring(i)].rot, time = 140})
+		--transition.moveTo( players[i], { x=tbl[tostring(i)].x-276*i*0.5, y=tbl[tostring(i)].y-600, time=140 } )
+		--players[i].isBodyActive = true
 	--else
 		--health_lbl.text = (tbl[tostring(i)].hp).."%"
 	end
@@ -231,8 +252,10 @@ if start then
 	--spaceship:setLinearVelocity( 0, -50,spaceship.x,spaceship.y)
 
 --spaceship:applyForce(spaceship.speed*xComp,spaceship.speed*yComp,spaceship.x,spaceship.y)
-ssk.actions.move.forward( spaceship, {rate = spaceship.speed} )
 
+ssk.actions.move.forward( spaceship, {rate = spaceship.speed} )
+bond[1].y = spaceship.y
+bond[2].y = spaceship.y
 	--ssk.actions.movep.forward( spaceship, {rate = spaceship.speed} )
 --ssk.actions.movep.impulseForward( spaceship, {rate = spaceship.speed} )
 --spaceship:applyLinearImpulse(spaceship.speed*xComp, spaceship.speed*yComp, spaceship.x, spaceship.y)
@@ -242,6 +265,7 @@ ssk.actions.move.forward( spaceship, {rate = spaceship.speed} )
 	health_title_lbl.text = math.floor(spaceship.y)
 	_G.y = spaceship.y
 	_G.x = spaceship.x
+	_G.rotation = math.floor(spaceship.rotation)
 end
 
 end,0)
@@ -261,10 +285,11 @@ local function Moveship(event)
 		--ssk.actions.movep.thrustForward( spaceship, { rate = spaceship.speed } )
 		if(event.x > 350) then
 		spaceship.rotation = -(event.x-350)*0.35
-		_G.rotation = spaceship.rotation
+		--players[1].rotation = spaceship.rotation
 	elseif(event.x < 332) then
+
 		spaceship.rotation = (332 - event.x)*0.35
-		_G.rotation = spaceship.rotation
+
 	end
 		--spaceship.x = event.x				--TODO: prev. used code
 

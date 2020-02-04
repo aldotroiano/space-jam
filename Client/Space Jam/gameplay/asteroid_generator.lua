@@ -21,7 +21,7 @@ instance = display.newGroup()
 
     physics.addBody(aster, "dynamic", {friction= 30, density = 60, bounce = 100})
     aster.myName = "asteroid"
-
+    
 
   world:insert(instance)  -- Inserting the left and right obstacle in the world
 

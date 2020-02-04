@@ -7,7 +7,7 @@ require("Modals.intermediary")
 local tcp = require("Networking.TCP")
 local utility = {}
 udp = socket.udp()
-udp:setpeername("35.178.99.133", 55000)
+udp:setpeername("35.176.107.7", 55000)
 udp:settimeout(0)
 
 function utility.startUDP()
