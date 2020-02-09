@@ -158,9 +158,10 @@ setInterval(in_match,100);
 function player_migration(HOSTremoteAddress){
 	var match_array = fetch_players(HOSTremoteAddress);
 	console.log("Length of team = ",match_array.length);
+	console.log(match_array[0].Tid);
 	var count = 1;
 	
-team = { "Tid" : match_array[0].Tid, "Pnum": match_array.length, "Status": 0, "Start_time": 1 }
+team = { "Tid" : match_array[0].Tid, "Pnum": match_array.length, "Status": 0, "totaly": 0 }
 	
 match_array.forEach(player => { 
 	team[count] = {
@@ -172,7 +173,6 @@ match_array.forEach(player => {
 	"udp" : player.udp,
 	"x" : 	count*(136.6),
 	"y" : 600,
-	"speed" : 10,
 	"hp" : 100,
 	"rot" : 0,
 	"pos" : -1,
@@ -210,10 +210,11 @@ case 1:
 	
 case 2:
 	console.log("Entered 2");
-	var temp_map = map_gen.generate_obstacles();
+	var map_data = map_gen.generate_obstacles();
+	match.totaly = map_data[2] + 500;
 	for (var i = 1; i <= match.Pnum; i++){
 		var arr = (match[i].udp).split(":");
-		send(JSON.stringify({TYPE : "INIT_GAME", STATUS : 3, MAP: temp_map}),arr[0], arr[1]);
+		send(JSON.stringify({TYPE : "INIT_GAME", STATUS : 3, OBSTACLES: map_data[0], ASTEROIDS: map_data[1], Y_TOTAL : map_data[2]+500 }),arr[0], arr[1]);
 		}
 	break;
 	
@@ -286,6 +287,7 @@ match[Pindex].x = x;
 match[Pindex].y = y;
 match[Pindex].hp = hp;
 match[Pindex].rot = rot;
+console.log(match[Pindex]);
 }
 
 
