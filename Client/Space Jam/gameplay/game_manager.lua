@@ -23,16 +23,17 @@ function update_message(message)
 set_status_message(message)
 end
 
-function terrain_generation(tbl)
+function terrain_generation(obstacles,asteroids,y_total)
   spawnBoundaries()
-for i = 1, #tbl, 1 do
-  if i < 200 then
-    spawnObstacle(tbl[i][1],tbl[i][2])
-    --print(i)
-  elseif i >= 200 and i <= 265 then
-    spawnAsteroid(tbl[i][1],tbl[i][2])
-  end
+  spawnEnd(y_total)
+for i = 1, #obstacles, 1 do
+    spawnObstacle(obstacles[i][1],obstacles[i][2])
 end
+
+for i = 1, #asteroids, 1 do
+  spawnAsteroid(asteroids[i][1],asteroids[i][2])
+end
+
 
 end
 

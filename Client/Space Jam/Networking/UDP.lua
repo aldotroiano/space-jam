@@ -73,7 +73,7 @@ function game_stats()
               print("Status 3 confirmed")
               _G.Status = jsn.STATUS
               tcp.game_conn({TYPE = "CONFIRM_STATUS", STATUS = _G.Status, Tid = _G.Tid, Pindex = _G.Pindex})
-              terrain_generation(jsn.MAP)       --Inputting in engine generated terrain
+              terrain_generation(jsn.OBSTACLES,jsn.ASTEROIDS,jsn.Y_TOTAL)       --Inputting in game manager generated terrain
 
               update_message("(3) Receiving and Rendering Terrain...")
 
@@ -81,7 +81,6 @@ function game_stats()
               print("Status 4 confirmed")
               _G.Status = jsn.STATUS
               tcp.game_conn({TYPE = "CONFIRM_STATUS", STATUS = _G.Status, Tid = _G.Tid, Pindex = _G.Pindex})
-
               update_message("(4) Synching Players...")
 
           elseif(jsn.TYPE == "INIT_GAME" and _G.Status == 4 and jsn.STATUS > _G.Status) then

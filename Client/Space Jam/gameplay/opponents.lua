@@ -30,14 +30,9 @@ local sheet_firespace = graphics.newImageSheet( "Assets/spaceship.png", {width=8
   full_opponent:insert(name)
 --]]
   physics.addBody(body, "kinematic",{density=30,friction=0,bounce=0})
-  
+
   body.isSleepingAllowed = false
   body.myName = "opponent"
-
-
---[[ function world:collision(event)
-    print("COLLIDED WITH OTHER SPACESHIP!")
-  end--]]
 
   world:insert(full_opponent)
 

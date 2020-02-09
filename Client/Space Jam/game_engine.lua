@@ -4,6 +4,7 @@ local scene = composer.newScene()
 local physics = require "physics"
 local opponents = require "gameplay.opponents"
 local boundaries = require "gameplay.boundaries"
+local finish = require "gameplay.finish_line"
 local terrains = require "gameplay.terrain_generator"
 local asteroids = require "gameplay.asteroid_generator"
 
@@ -16,7 +17,7 @@ local terrain, asteroid = {},{}
 local players = {}
 local terrain_c, asteroid_c = 1,1
 local num_players = 4
-local start = false
+local start,finished = false,false
 
 camera = perspective.createView()
 _G.ssk.init()
@@ -78,7 +79,7 @@ spaceship.myName = "spaceship"
 spaceship.x = display.contentCenterX
 spaceship.speed = 550
 
-local outline1 = graphics.newOutline( 1, sheet_firespace, 1)
+--local outline1 = graphics.newOutline( 1, sheet_firespace, 1)
 spaceship.anchorY, spaceship.anchorX = 0.5,0.5
 spaceship:play()
 spaceship.collision = onLocalCollision
@@ -92,8 +93,6 @@ spaceship.isBullet = true
 
 --world:insert(rightwall)
 --touchjoint = physics.newJoint( "touch", spaceship, spaceship.x, spaceship.y+20 )
-
-
 
 	game_group:insert(background)
 	game_group:insert(options_bar)
@@ -112,6 +111,7 @@ camera:add(spaceship,1)
 ship_movement()
 camera:setFocus(spaceship)
 camera:track()
+--ls
 --physics.setDrawMode( "hybrid" )   -- Shows collision engine outlines only
 --spawnPlayers(1,200,600,"ha")
 physics.start()
@@ -143,7 +143,7 @@ function updateTimer_start(rem_time)
 				countdown_lbl.text = "GO!"
 				timer.cancel( tmr_countdown)
 				timer.performWithDelay( 700, function()
-					transition.fadeOut( countdown_lbl, { time=200 } )
+				transition.fadeOut( countdown_lbl, { time=200 } )
 					start = true
 
 				end,1)
@@ -158,13 +158,18 @@ end
 function spawnBoundaries()
 bond = boundaries.new(world,spaceship)
 bond:toBack()
-camera:add(bond,7)
+--camera:add(bond,7)
+end
 
+function spawnEnd(y_val)
+finishline = finish.new(world,-y_val)
+finishline:toBack()
+camera:add(finishline,7)
 end
 
 function spawnObstacle(x,y)
 	print("Spawning terrain blocks")
-	terrain[#terrain+1] = terrains.new(world,x, display.contentCenterY - (terrain_c *y))
+	terrain[#terrain+1] = terrains.new(world,x, display.contentCenterY - y)
 	terrain[#terrain]:toBack()
 	terrain_c = terrain_c + 1
 	camera:add(terrain[#terrain],3)
@@ -190,12 +195,17 @@ function onLocalCollision( self, event )
 		health_lbl.text = _G.health.."%"
 	end
 
+
 	if ( event.phase == "began" ) then
 
 		print( "collision began wit")
 
 	elseif ( event.phase == "ended" ) then
 
+		if self.myName == "spaceship" and event.other.myName == "finishline" then
+			print("WON!!!!!!!!!!!")
+			finished = true
+		end
 		print("collision ended")
 
 	end
@@ -214,9 +224,8 @@ end
 function spawnPlayers(i,x,y,name)
 	print("Spawning opponents at", x , y)
 	players[i] = opponents.new(world,i,x,y,name)
-	--players[i].rotation = 10
 	players[i]:toFront()
---game_group:insert(players[i])
+
 	camera:add(players[i],4)
 
 end
@@ -247,7 +256,7 @@ end
 function ship_movement()
 
 tmr_move = timer.performWithDelay( 2, function()
-if start then
+if start and finished == false then
 
 	--spaceship:setLinearVelocity( 0, -50,spaceship.x,spaceship.y)
 
@@ -256,6 +265,7 @@ if start then
 ssk.actions.move.forward( spaceship, {rate = spaceship.speed} )
 bond[1].y = spaceship.y
 bond[2].y = spaceship.y
+
 	--ssk.actions.movep.forward( spaceship, {rate = spaceship.speed} )
 --ssk.actions.movep.impulseForward( spaceship, {rate = spaceship.speed} )
 --spaceship:applyLinearImpulse(spaceship.speed*xComp, spaceship.speed*yComp, spaceship.x, spaceship.y)
@@ -285,12 +295,13 @@ local function Moveship(event)
 		--ssk.actions.movep.thrustForward( spaceship, { rate = spaceship.speed } )
 		if(event.x > 350) then
 		spaceship.rotation = -(event.x-350)*0.35
-		--players[1].rotation = spaceship.rotation
+
 	elseif(event.x < 332) then
 
 		spaceship.rotation = (332 - event.x)*0.35
 
 	end
+
 		--spaceship.x = event.x				--TODO: prev. used code
 
 		--spaceship.rotation = (display.actualContentWidth/2 - event.x)*0.3
