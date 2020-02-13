@@ -5,6 +5,7 @@ local physics = require "physics"
 local opponents = require "gameplay.opponents"
 local boundaries = require "gameplay.boundaries"
 local finish = require "gameplay.finish_line"
+local sidebar = require "gameplay.sidebar"
 local terrains = require "gameplay.terrain_generator"
 local asteroids = require "gameplay.asteroid_generator"
 
@@ -93,6 +94,11 @@ spaceship.isBullet = true
 
 --world:insert(rightwall)
 --touchjoint = physics.newJoint( "touch", spaceship, spaceship.x, spaceship.y+20 )
+
+  spawnBoundaries()
+	spawnSidebar()
+
+
 
 	game_group:insert(background)
 	game_group:insert(options_bar)
@@ -183,6 +189,21 @@ function spawnAsteroid(x,y)
 	camera:add(asteroid[#asteroid],5)
 end
 
+function spawnSidebar()
+
+sidebar.createcontainer()
+sidebar.createline()
+end
+
+function spawnSidebarMain(i,spaceship_y)
+
+sidebar.spawnMain(i,spaceship_y)
+
+end
+
+function spawnSidebarOpponent(i,opponent_y)
+sidebar.spawnOpponent(i,opponent_y)
+end
 
 function onLocalCollision( self, event )
 
@@ -219,13 +240,13 @@ print("Spawning Main Player")
 		_G.health = 100;
 	print("x,y of MAIN : ", x, " ", y)
 spaceship.x, spaceship.y = x, y
+
 end
 
 function spawnPlayers(i,x,y,name)
 	print("Spawning opponents at", x , y)
 	players[i] = opponents.new(world,i,x,y,name)
 	players[i]:toFront()
-
 	camera:add(players[i],4)
 
 end
@@ -234,21 +255,12 @@ function setPlayerPos(tbl)
 
 	for i = 1,_G.Pnum,1 do
 		if(i ~= _G.Pindex) then
+		transition.to( players[i], { x=tbl[tostring(i)].x,y=tbl[tostring(i)].y, rotation = tbl[tostring(i)].rot, time = 150})
+		sidebar.setOpponent(i,tbl[tostring(i)].y)
+	elseif((i == _G.Pindex)) then
+		sidebar.setMain(i,spaceship.y)
 
-		--transition.to( players[i].rotation, {rotation = tbl[tostring(i)].rotation} )			-- TODO IMPLEMENT CORREsCTLY
-
-
-		--players[i].x = tbl[tostring(i)].x-270*i*0.5
-		--players[i].y = tbl[tostring(i)].y-600
-		--players[i].isBodyActive = false
-		transition.to( players[i], { x=tbl[tostring(i)].x,y=tbl[tostring(i)].y, rotation = tbl[tostring(i)].rot, time = 140})
-
-		--transition.to( players[i], { x=tbl[tostring(i)].x-276*i*0.5,y=tbl[tostring(i)].y-600, rotation = tbl[tostring(i)].rot, time = 140})
-		--transition.moveTo( players[i], { x=tbl[tostring(i)].x-276*i*0.5, y=tbl[tostring(i)].y-600, time=140 } )
-		--players[i].isBodyActive = true
-	--else
-		--health_lbl.text = (tbl[tostring(i)].hp).."%"
-	end
+end
 	end
 
 end
@@ -272,7 +284,7 @@ bond[2].y = spaceship.y
 				                        --  "up" the screen is negative
 	--spaceship:applyForce((math.cos(math.rad(spaceship.rotation)) * spaceship.speed),(-1 * math.sin(math.rad(spaceship.rotation)) * (spaceship.speed)))
 	--spaceship:translate(0,-spaceship.speed)
-	health_title_lbl.text = math.floor(spaceship.y)
+--	health_title_lbl.text = math.floor(spaceship.y)
 	_G.y = spaceship.y
 	_G.x = spaceship.x
 	_G.rotation = math.floor(spaceship.rotation)

@@ -1,7 +1,7 @@
 local physics = require "physics"
 local terr = {}
 local colors = {"005ce6","e60000","b82e8a","990033","cc3300"}
-
+require "Libraries.Hex2RGB"
 
 function terr.new(world,x_cord,y)
 instance = display.newGroup()
@@ -13,7 +13,7 @@ instance = display.newGroup()
   local l1 = display.newRoundedRect(-10,y,left_max-75,60,15)
   l1.anchorX = 0
   l1:setFillColor(hex2rgb(colors[color]))
-  l1:setStrokeColor(r_rand+0.2,g_rand+0.2,b_rand+0.2)
+  l1:setStrokeColor(hex2rgb(colors[color])+0.2,g_rand+0.2,b_rand+0.2)
 
 
   local r1 = display.newRoundedRect(left_max+75,y,display.actualContentWidth+10,60,15)

@@ -24,7 +24,7 @@ set_status_message(message)
 end
 
 function terrain_generation(obstacles,asteroids,y_total)
-  spawnBoundaries()
+
   spawnEnd(y_total)
 for i = 1, #obstacles, 1 do
     spawnObstacle(obstacles[i][1],obstacles[i][2])
@@ -38,13 +38,17 @@ end
 end
 
 function player_generation(tbl)
+
 print("Got playerinfo")
 for i = 1,_G.Pnum,1 do
 
   if(i == _G.Pindex) then
     spawnPlayerMain(tbl[tostring(i)].x,tbl[tostring(i)].y)
+    _G.totaly = tbl.totaly
+    spawnSidebarMain(i,tbl[tostring(i)].y)
   else
     spawnPlayers(i,tbl[tostring(i)].x,tbl[tostring(i)].y,tbl[tostring(i)].Usr)
+    spawnSidebarOpponent(i,tbl[tostring(i)].y)
   end
 end
 end
@@ -58,7 +62,7 @@ function server_start(timestamp)
 end
 
 function set_player_pos(tbl)
-
+_G.totaly = tbl.totaly
 setPlayerPos(tbl)
 
 end
