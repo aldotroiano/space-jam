@@ -175,7 +175,7 @@ match_array.forEach(player => {
 	"y" : 600,
 	"hp" : 100,
 	"rot" : 0,
-	"pos" : -1,
+	"pos" : count,
 	}
 	count++;
 	});
@@ -287,7 +287,19 @@ match[Pindex].x = x;
 match[Pindex].y = y;
 match[Pindex].hp = hp;
 match[Pindex].rot = rot;
-console.log(match[Pindex]);
+
+for (var f = 1;f <= match.Pnum; f++){	
+	for (var c = 1; c <= match.Pnum; c++){
+		if (f != c){
+		if (match[c].y < match[f].y && match[c].pos > match[f].pos){
+		var temp = match[c].pos;
+		match[c].pos = match[f].pos;
+		match[f].pos = temp;
+		}
+		}
+	}
+}
+
 }
 
 
