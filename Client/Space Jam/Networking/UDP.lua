@@ -43,7 +43,7 @@ end
 function game_stats()
   show_gm()         --Showing game on screen
   _G.ingame = false
-  tmr_gamestats = timer.performWithDelay( 20, function()
+  tmr_gamestats = timer.performWithDelay( 15, function()
 
       data = udp:receive()
 

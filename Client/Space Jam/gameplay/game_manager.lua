@@ -63,6 +63,6 @@ end
 
 function set_player_pos(tbl)
 _G.totaly = tbl.totaly
-setPlayerPos(tbl)
+setPlayers(tbl)
 
 end
