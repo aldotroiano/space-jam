@@ -19,33 +19,35 @@ server.listen(PORT, HOST, function() {
 
 function onClientConnected(sock) {
 
-  var remoteAddress = sock.remoteAddress + ':' + sock.remotePort;
+  var remoteAddress = sock.remoteAddress + ':' + sock.remotePort;   //Showing the Remote address opening the connection
   counter = counter + 1;
-  console.log('NEW CONNECTED CLIENT: %s', remoteAddress);
-  console.log('Connected clients: %i', counter);
+  console.log('NEW CONNECTED CLIENT: %s', remoteAddress);   //Debug output
+  //console.log('Connected clients: %i', counter);          //Debug output
 
-  sock.on('data', function(data) {
+  sock.on('data', function(data) {        //Function called once a socket is opened for incoming data
 
 	try{
-	decoded_json = JSON.parse(data);
+	decoded_json = JSON.parse(data);       //Parsing JSON message
 
-	switch (decoded_json.TYPE){
+	switch (decoded_json.TYPE){            //Switch on different data Types
 
-  	case "HANDSHAKE":
-      	console.log('Received IH from: %s', remoteAddress);
-      	db.add_player(remoteAddress);
-      	sock.write(JSON.stringify({TYPE : "HANDSHAKE", RES : "OK", IPADDRESS: remoteAddress}));
-    	break;
+  case "HANDSHAKE":                     //If client requests handshake
+      console.log('Received IH from: %s', remoteAddress);
+      db.add_player(remoteAddress);     //DB function called to register user
+      sock.write(JSON.stringify({TYPE : "HANDSHAKE", RES : "OK", IPADDRESS: remoteAddress}));
+    break;          //Writing to the Client through Socket (OK,TCP remote address)
 
   	case "KEEPALIVE":
 		console.log('Received KAP from: %s', remoteAddress);
-    	sock.write(JSON.stringify({TYPE : "KEEPALIVE", RES : "OK"}));
+    	sock.write(JSON.stringify({TYPE : "KEEPALIVE", RES : "OK"}));    //Previously used. Unused in final version
 		break;
 
 	case "CREATE_TEAM":
+
 		db.team_creation_adding(remoteAddress,decoded_json.NAME,decoded_json.USERNAME).then(function(isHost){
-		sock.write(JSON.stringify({TYPE : "CREATE_TEAM", RES : "OK", ISHOST: isHost}));
-		console.log("PACKET SENT");
+                  //Promise for database writing (Appending row to Team_PLAYER)
+		sock.write(JSON.stringify({TYPE : "CREATE_TEAM", RES : "OK", ISHOST: isHost})); //Client response (OK,isHost(0 or 1))
+		console.log("PACKET SENT");     //Debug output
 		});
 		break;
 
@@ -57,21 +59,21 @@ function onClientConnected(sock) {
 		teams.deletion_manager(remoteAddress);
 		});
 		break;
-		
+
 		case "START_MATCH":
 		sock.write(JSON.stringify({TYPE: "MATCH", RES : "OK"}));
 		teams.player_migration(remoteAddress);
 		console.log("HOST IS TRYING TO START MATCH")
 		break;
-		
+
 		case "IN_MATCH":
-		
+
 		break;
-		
+
 		case "CONFIRM_STATUS":
 		//console.log("Confirming status of single player");
 		teams.update_status(decoded_json.Tid,decoded_json.Pindex,decoded_json.STATUS);
-		
+
 	default:
 		break;
 }

@@ -26,7 +26,7 @@ try{
 				create_object(player_id,team_id,is_host,username,decoded_json.TCPADDRESS,addr);
 				});
     	break;
-    	
+
     	case "IN_GAME":
     	update_player(decoded_json.Tid,decoded_json.Pindex,decoded_json.x,decoded_json.y,decoded_json.health,decoded_json.rotation);
     	break;
@@ -61,7 +61,7 @@ player = {
 }
 players.push(player);
 console.log(players);
-periodic_UDP();
+//periodic_UDP();
 }
 
 function deletion_manager(tcpa){
@@ -70,10 +70,10 @@ var index_player;
 
 for (var x = 0; x < players.length; x++){
 	if(players[x].tcp == tcpa){
-		
+
 		if(players[x].host == 1){
 		change_host(tcpa,players[x].Tid);
-		
+
 		}
 		players.splice(x,1);
 		console.log("DELETED HOST FROM ARRAY");
@@ -102,10 +102,9 @@ function fetch_players(HOSTremoteAddress){		//Migration process from Team to Mat
 	players.forEach(player => {
 		if(team_id == player.Tid){
 			match_players.push(player);
-			
+
 			console.log("TEAMS: ", players);
-			// DELETE EACH PLAYER FROM THE TEAM ARRAY (SPLICE NEEDED AT THIS LINE) TODO
-			//CODE BELOW SENDS PACKET TO CLIENTS.  IF NOT REACHED, RETRY.
+
 			var arr = (player.udp).split(":");
 			send(JSON.stringify({TYPE : "INITPACK_GAME", RES : "OK"}),arr[0],arr[1]);			//Sending start packet to each of the team members
 			//players.splice(players.indexOf(player),1);
@@ -123,7 +122,7 @@ function periodic_UDP(){
 		var tID = players[a].Tid;
 		var tmp_nm = [];
 		var tmp_ishost = [];
-	
+
 		for(var b = 0; b < players.length; b++){
 			if(players[b].Tid == tID){
 				tmp_nm.push(players[b].usr);
@@ -157,13 +156,13 @@ setInterval(in_match,100);
 
 function player_migration(HOSTremoteAddress){
 	var match_array = fetch_players(HOSTremoteAddress);
-	console.log("Length of team = ",match_array.length);
-	console.log(match_array[0].Tid);
-	var count = 1;
-	
+	//Previously called function for player migration from Player object to Team Array
+	console.log("Length of team array = ",match_array.length);
+	var count = 1;		//Index for Pid in Match object
+
 team = { "Tid" : match_array[0].Tid, "Pnum": match_array.length, "Status": 0, "totaly": 0 }
-	
-match_array.forEach(player => { 
+	//Team information, outside the player brackets. Universally accessible
+match_array.forEach(player => {
 	team[count] = {
 	"Pid" : player.Pid,
 	"Host" : player.host,
@@ -179,7 +178,8 @@ match_array.forEach(player => {
 	}
 	count++;
 	});
-
+//Match object pushed to Matches ARRAY
+//One Object for each active match
 matches.push(team);
 console.log(matches);
 return true;
@@ -187,8 +187,8 @@ return true;
 
 
 function match_init(){
-matches.forEach(match => {
-
+	matches.forEach(match => {
+			//Looping through each of the Match objects in the Match array
 switch (match.Status){				//Switch sending game-player info
 
 case 0:
@@ -207,7 +207,7 @@ case 1:
 		send(JSON.stringify({TYPE : "INIT_GAME", STATUS : 2, INFO: match}),arr[0], arr[1]);
 		}
 	break;
-	
+
 case 2:
 	console.log("Entered 2");
 	var map_data = map_gen.generate_obstacles();
@@ -217,7 +217,7 @@ case 2:
 		send(JSON.stringify({TYPE : "INIT_GAME", STATUS : 3, OBSTACLES: map_data[0], ASTEROIDS: map_data[1], Y_TOTAL : map_data[2]+500 }),arr[0], arr[1]);
 		}
 	break;
-	
+
 case 3:
 	console.log("Entered 3");
 	for (var i = 1; i <= match.Pnum; i++){
@@ -225,7 +225,7 @@ case 3:
 		send(JSON.stringify({TYPE : "INIT_GAME", STATUS : 4}),arr[0], arr[1]);
 		}
 	break;
-	
+
 case 4:
 	console.log("Entered 4 - Game starting");
 	var tmstmp = new Date().getTime()/1000;
@@ -258,25 +258,17 @@ case 5:
 
 function update_status(Tid,Pindex,status){
 //console.log("Updating status of Tid" + Tid + "and Pnum " + Pindex);
-
 matches.forEach(match => {
-if(match.Tid == Tid){
-match[Pindex].st = status;		//Incrementing status variable
-console.log("Increment status");
+	if(match.Tid == Tid){
+			match[Pindex].st = status;		//Local global status var
+			console.log("Increment status");
 
-var sum = 0;
-for(var i = 1; i <= match.Pnum; i++){ sum = sum + match[i].st; }
-if(sum/match.Pnum == status){ match.Status = status; }
+			var sum = 0;
+			for(var i = 1; i <= match.Pnum; i++){ sum = sum + match[i].st; }
+			if(sum/match.Pnum == status){ match.Status = status; }
+			//If the Match players have the same status, the global Match Status is incremented
 }
-//console.log(match);
-
 });
-
-//matches[]
-//Need to update status of single players in the amtch array object
-//Continue with different status codes to get the system working. Without need of a stable connection
-
-
 }
 
 function update_player(Tid,Pindex,x,y,hp,rot){
@@ -288,7 +280,7 @@ match[Pindex].y = y;
 match[Pindex].hp = hp;
 match[Pindex].rot = rot;
 
-for (var f = 1;f <= match.Pnum; f++){	
+for (var f = 1;f <= match.Pnum; f++){
 	for (var c = 1; c <= match.Pnum; c++){
 		if (f != c){
 		if (match[c].y < match[f].y && match[c].pos > match[f].pos){
